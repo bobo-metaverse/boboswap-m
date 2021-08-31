@@ -501,12 +501,12 @@ export default {
         if (number == 0) return;
         pairContract.methods.getOrderInfos(true, 0, number > this.orderSize ? this.orderSize : number).call().then(orderInfos => {
           console.log('buyOrder', orderInfos);
-          const length = orderInfos.orderIds.length;
+          const length = orderInfos.length;
           var i = 0;
           var lastIndex = 0;
           while(i < length && lastIndex < this.orderListedSize) {
-            const amount = new BigNumber(orderInfos.amounts[i]);
-            const price = this.getReadableNumber(orderInfos.orderPrices[i], 6, 2);
+            const amount = new BigNumber(orderInfos[i].minOutAmount);
+            const price = this.getReadableNumber(orderInfos[i].spotPrice, 6, 2);
             if (lastIndex > 0 && this.buyList[lastIndex - 1].price == price) {
               this.buyList[lastIndex - 1].amount = this.buyList[lastIndex - 1].amount.plus(amount);
             } else {
@@ -523,12 +523,12 @@ export default {
         if (number == 0) return;
         pairContract.methods.getOrderInfos(false, 0, number > this.orderSize ? this.orderSize : number).call().then(orderInfos => {
           console.log('sellOrder', orderInfos);
-          const length = orderInfos.orderIds.length;
+          const length = orderInfos.length;
           var i = 0;
           var lastIndex = 0;
           while(i < length && lastIndex < this.orderListedSize) {
-            const amount = new BigNumber(orderInfos.amounts[i]);
-            const price = this.getReadableNumber(orderInfos.orderPrices[i], 6, 2);
+            const amount = new BigNumber(orderInfos[i].inAmount);
+            const price = this.getReadableNumber(orderInfos[i].spotPrice, 6, 2);
             if (lastIndex > 0 && this.sellList[lastIndex - 1].price == price) {
               this.sellList[lastIndex - 1].amount = this.sellList[lastIndex - 1].amount.plus(amount);
             } else {
