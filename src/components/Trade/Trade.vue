@@ -8,7 +8,7 @@
       </div>
       <div class="view_right">
         <img src="../../assets/images/view_img2.png" @click="chart" />
-        <i class="iconfont icon-more more"></i>
+        <i class="iconfont icon-more more"  @click="updateAll"></i>
       </div>
     </div>
     <div class="trade_view2">
@@ -190,13 +190,16 @@
         >
       </div>
       <CurrentEntrust v-if="listInde"
-        :pairInfo="pairInfo"/>
+        :pairInfo="pairInfo"
+        :key="refresh"
+        @update="updateAll"/>
       <TransactionRecord v-else />
       <el-dialog
         title="交易设置"
         :visible="centerDialogVisible"
         width="90%"
         center
+        @close="centerDialogVisible = false"
       >
         <SlidingPointDialog :pairInfo="pairInfo" @close="closeSlidingDialog"/>
       </el-dialog>
@@ -254,6 +257,7 @@ export default {
       orderSize: 10,
       orderListedSize: 6,
       executingTx: false,
+      refresh: true,
     };
   },
   created:function() {
@@ -348,7 +352,9 @@ export default {
       }
       if (this.buy_sell) {   // 买单
         if (!this.baseTokenApproved) {  // 授权
-          this.curStakeId = this.baseTokenContract.methods['approve'].cacheSend(this.pairInfo.pairAddr, 100000000, { from: this.$store.state.account });
+          this.curStakeId = this.baseTokenContract.methods['approve'].cacheSend(this.pairInfo.pairAddr, 
+                                                                                '0x' + new BigNumber(1).shiftedBy(30).toString(16),
+                                                                                { from: this.$store.state.account });
           this.syncTxStatus(
             () => {
               this.baseTokenApproved = true;
@@ -368,6 +374,7 @@ export default {
                                                                                     { from: this.$store.state.account });
             this.syncTxStatus(
               () => {
+                this.updateAll();
                 this.toast("success", "下单成功");
               },
               () => {
@@ -384,6 +391,7 @@ export default {
 
             this.syncTxStatus(
               () => {
+                this.updateAll();
                 this.toast("success", "交易成功");
               },
               () => {
@@ -395,7 +403,9 @@ export default {
         }
       } else {  // 卖单
         if (!this.quoteTokenApproved) {  // 授权
-          this.curStakeId = this.quoteTokenContract.methods['approve'].cacheSend(this.pairInfo.pairAddr, 100000000, { from: this.$store.state.account });
+          this.curStakeId = this.quoteTokenContract.methods['approve'].cacheSend(this.pairInfo.pairAddr, 
+                                                                                '0x' + new BigNumber(1).shiftedBy(30).toString(16), 
+                                                                                { from: this.$store.state.account });
           this.syncTxStatus(
             () => {
               this.quoteTokenApproved = true;
@@ -415,6 +425,7 @@ export default {
               { from: this.$store.state.account });
             this.syncTxStatus(
               () => {
+                this.updateAll();
                 this.toast("success", "下单成功");
               },
               () => {
@@ -431,6 +442,7 @@ export default {
 
             this.syncTxStatus(
               () => {
+                this.updateAll();
                 this.toast("success", "交易成功");
               },
               () => {
@@ -452,10 +464,10 @@ export default {
 
         // get the transaction hash using our saved `stackId`
         const txHash = transactionStack[this.curStakeId];
-        console.log("txHash", txHash, this.curStakeId, transactionStack);
+        //console.log("txHash", txHash, this.curStakeId, transactionStack);
         // if transaction hash does not exist, don't display anything
         if (!txHash) return;
-        console.log("transaction", transactions[txHash]);
+        //console.log("transaction", transactions[txHash]);
         if (transactions[txHash]) {
           const status = transactions[txHash].status;
           if (status == "pending") return;
@@ -496,6 +508,10 @@ export default {
     },
     updateOrderList() {
       var pairContract = this.$store.state.drizzle.contracts[this.pairInfo.pairAddr];
+      this.buyList.map(v => {
+        v.price = 0;
+        v.amount = 0;
+      });
       pairContract.methods.getTotalOrderNumber(true).call().then(number => {
         number = parseInt(number);
         if (number == 0) return;
@@ -517,6 +533,10 @@ export default {
             i++;
           }
         });
+      });
+      this.sellList.map(v => {
+        v.price = 0;
+        v.amount = 0;
       });
       pairContract.methods.getTotalOrderNumber(false).call().then(number => {
         number = parseInt(number);
@@ -540,6 +560,13 @@ export default {
           }
         });
       });
+    },
+    updateAll() {
+      console.log("update all");
+      // this.$forceUpdate();
+      this.updateTokenAmount();
+      this.updateOrderList();
+      this.refresh= !this.refresh;
     },
     getReadableNumber(value, assetDecimal, displayDecimal) {
       let renderValue = new BigNumber(value);

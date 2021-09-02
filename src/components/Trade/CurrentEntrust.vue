@@ -11,16 +11,21 @@
             <span v-if="order.bBuy" class="type_text_buy">买入</span>
             <span v-else class="type_text_sell">买出</span>
           </div>
-          <span class="cancel" @click="cancelOrder(order.id)">撤销</span>
+          <span v-if="executingTx" class="cancel">撤销</span>
+          <span v-else class="cancel" @click="cancelOrder(order.id)">撤销</span>
         </div>
         <div class="data_info">
           <div class="small_box">
-            <span class="info_title">价格({{pairInfo.baseTokenName}})</span>
+            <span class="info_title">下单价({{pairInfo.baseTokenName}})</span>
             <span class="info_num">{{order.price}}</span>
           </div>
           <div class="small_box">
-            <span class="info_title">数量({{pairInfo.symbol}})</span>
-            <span class="info_num">{{order.amount}}</span>
+            <span class="info_title">下单数量({{order.bBuy ? pairInfo.baseTokenName : pairInfo.symbol}})</span>
+            <span class="info_num">{{order.amountIn}}</span>
+          </div>
+          <div class="small_box">
+            <span class="info_title">至少获得({{order.bBuy ? pairInfo.symbol : pairInfo.baseTokenName}})</span>
+            <span class="info_num">{{order.amountOut}}</span>
           </div>
           <div class="small_box info_time">
             <span class="info_title">时间</span>
@@ -41,28 +46,13 @@ export default {
     return {
       pairContract: null,
       orderNFT: this.$store.state.drizzle.contracts.OrderNFT,
-      orderList: []
+      orderList: [],
+      curStakeId: null,
+      executingTx: false
     };
   },
   created() {
-    this.pairContract = this.$store.state.drizzle.contracts[this.pairInfo.pairAddr];
-    this.pairContract.methods.getUserHangingOrderNumber(this.$store.state.account).call().then(number => {
-      var i = 0;
-      while(i < number) {
-        this.pairContract.methods.getUserHangingOrderId(this.$store.state.account, i).call().then(id => {
-          this.orderNFT.methods.id2NFTInfoMap(id).call().then(orderInfo => {
-            var orderInfo;
-            orderInfo.id = id;
-            orderInfo.bBuy = orderInfo.bBuyQuoteToken;
-            orderInfo.price = this.getReadableNumber(orderInfo.spotPrice, 6, 2);
-            orderInfo.amount = this.getReadableNumber(orderInfo.bBuyQuoteToken ? orderInfo.minOutAmount : orderInfo.inAmount, this.pairInfo.decimals, 2);
-            orderInfo.time = this.getValidTime(orderInfo.delegateTime);
-            this.orderList.push(orderInfo);
-          });
-        });
-        i++;
-      }
-    });
+    this.updateHangingOrders();
   },
   methods: {
     getReadableNumber(value, assetDecimal, displayDecimal) {
@@ -84,8 +74,69 @@ export default {
       var date = new Date(renderTime.toNumber());
       return date.toLocaleString(); // +  '.' + (date.getMilliseconds() + 1000 + '').substr(1);
     },
+    updateHangingOrders() {
+      console.log("created");
+      this.pairContract = this.$store.state.drizzle.contracts[this.pairInfo.pairAddr];
+      this.pairContract.methods.getUserHangingOrderNumber(this.$store.state.account).call().then(number => {
+        var i = 0;
+        while(i < number) {
+          this.pairContract.methods.getUserHangingOrderId(this.$store.state.account, i).call().then(id => {
+            this.orderNFT.methods.id2NFTInfoMap(id).call().then(orderInfo => {
+              orderInfo.id = id;
+              orderInfo.bBuy = orderInfo.bBuyQuoteToken;
+              orderInfo.price = this.getReadableNumber(orderInfo.spotPrice, 6, 2);
+              orderInfo.amountIn = this.getReadableNumber(orderInfo.inAmount, orderInfo.bBuy ? 6 : this.pairInfo.decimals, 2);
+              orderInfo.amountOut = this.getReadableNumber(orderInfo.minOutAmount, orderInfo.bBuy ? this.pairInfo.decimals : 6, 4);
+              orderInfo.time = this.getValidTime(orderInfo.delegateTime);
+              this.orderList.push(orderInfo);
+            });
+          });
+          i++;
+        }
+      });
+    },
     cancelOrder(orderId) {
+      this.curStakeId = this.pairContract.methods['cancelOrder'].cacheSend(orderId, { from: this.$store.state.account });
+      this.syncTxStatus(
+        orderId,
+        () => {
+          this.$emit("update");
+          this.toast("success", "成功撤销订单");
+        },
+        () => {
+          this.toast("error", "订单撤销失败");
+        }
+      );
+    },
+    syncTxStatus(orderId, successCallback, failCallback) {
+      this.executingTx = true;
+      const intervalId = setInterval(() => {
+        // get the transaction states from the drizzle state
+        console.log(this.$drizzle);
 
+        const drizzleState = this.$drizzle.store.getState();
+        const { transactions, transactionStack } = drizzleState;
+
+        // get the transaction hash using our saved `stackId`
+        const txHash = transactionStack[this.curStakeId];
+        //console.log("txHash", txHash, this.curStakeId, transactionStack);
+        // if transaction hash does not exist, don't display anything
+        if (!txHash) return;
+        //console.log("transaction", transactions[txHash]);
+        if (transactions[txHash]) {
+          const status = transactions[txHash].status;
+          if (status == "pending") return;
+
+          this.executingTx = false;
+          if (status == "success") {
+            successCallback();
+          } else {
+            failCallback();
+          }
+          clearInterval(intervalId);
+        }
+        return;
+      }, 3000);
     }
   },
 };

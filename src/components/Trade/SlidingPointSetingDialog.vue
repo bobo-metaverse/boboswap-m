@@ -26,26 +26,6 @@
       <el-button size="mini" @click="handleClick(5)">5%</el-button>
       <el-button size="mini" @click="handleClick(10)">10%</el-button>
     </el-button-group>
-    <!-- <div class="seting_1">
-      <span>交易超时时间</span>
-      <el-popover
-        placement="top"
-        width="200"
-        trigger="click"
-        content="设置超时时间后,如果订单超过设置值还未成交,订单将被取消。"
-      >
-        <i class="iconfont icon-help help" slot="reference"></i>
-      </el-popover>
-    </div>
-    <el-input
-      placeholder="20"
-      size="small"
-      class="input1"
-      v-model.number="sliding_time"
-      type="number"
-    >
-      <template slot="append">分钟</template>
-    </el-input> -->
     <div class="save" @click="save">保存</div>
   </div>
 </template>

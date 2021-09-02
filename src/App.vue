@@ -39,5 +39,6 @@ export default {
 @import "./assets/styles/base.scss";
 #app {
   font-family: "Playfair Display SC";
+  height: 100%;
 }
 </style>
