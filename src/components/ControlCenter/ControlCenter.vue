@@ -11,9 +11,8 @@
     <div class="user_center" v-else>
       <img src="../../assets/images/user_center_img.png" />
       <span class="address">{{ account.substr(0, 6) + "..." + account.substr(account.length - 3) }}</span>
-      <span class="total_asset">账户总资产折合(USDT)</span>
+      <span class="total_asset">账户挂单总资产折合(USDT)</span>
       <span class="total_num">0.00000000</span>
-      <span class="total_asset">≈0.00(RMB)</span>
     </div>
     <div class="control">
       <div class="control_item">

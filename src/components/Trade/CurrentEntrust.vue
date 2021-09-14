@@ -8,8 +8,8 @@
       <div class="list_item">
         <div class="type">
           <div class="type_left">
-            <span v-if="order.bBuy" class="type_text_buy">买入</span>
-            <span v-else class="type_text_sell">买出</span>
+            <span v-if="order.bBuy" class="type_text_buy">买入[NFT-Id: {{order.id}}]</span>
+            <span v-else class="type_text_sell">卖出[NFT-Id: {{order.id}}]</span>
           </div>
           <span v-if="executingTx" class="cancel">撤销</span>
           <span v-else class="cancel" @click="cancelOrder(order.id)">撤销</span>
@@ -75,10 +75,11 @@ export default {
       return date.toLocaleString(); // +  '.' + (date.getMilliseconds() + 1000 + '').substr(1);
     },
     updateHangingOrders() {
-      console.log("created");
+      this.orderList = [];
       this.pairContract = this.$store.state.drizzle.contracts[this.pairInfo.pairAddr];
       this.pairContract.methods.getUserHangingOrderNumber(this.$store.state.account).call().then(number => {
         var i = 0;
+        console.log('order number = ', number);
         while(i < number) {
           this.pairContract.methods.getUserHangingOrderId(this.$store.state.account, i).call().then(id => {
             this.orderNFT.methods.id2NFTInfoMap(id).call().then(orderInfo => {
@@ -112,7 +113,7 @@ export default {
       this.executingTx = true;
       const intervalId = setInterval(() => {
         // get the transaction states from the drizzle state
-        console.log(this.$drizzle);
+        //console.log(this.$drizzle);
 
         const drizzleState = this.$drizzle.store.getState();
         const { transactions, transactionStack } = drizzleState;

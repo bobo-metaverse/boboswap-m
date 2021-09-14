@@ -59,8 +59,11 @@ const mutations = {
 							console.log(url, res);
 							return;
 						}
-						if (res.data != null && res.data.length > 0)
-							pairInfo.high24h = res.data[0].price_change_percentage_24h.toFixed(2);
+						if (res.data != null && res.data.length > 0) {
+							pairInfo.price24HPercent = res.data[0].price_change_percentage_24h.toFixed(2);
+							pairInfo.high24H = res.data[0].high_24h.toFixed(2);
+							pairInfo.low24H = res.data[0].low_24h.toFixed(2);
+						}
 						state.hangqing.push(pairInfo);					
 					});
 
@@ -78,7 +81,7 @@ const mutations = {
 									pairInfo.pairAddr = pairAddr;
 									const boboPair = new state.web3.eth.Contract(BoboPair.abi, pairAddr);
 									boboPair.methods.volumnOf24Hours().call().then(volumn => {
-										pairInfo.volumnOf24Hours = volumn;
+										pairInfo.volumnOf24Hours = new BigNumber(volumn).shiftedBy(-6);
 									});
 									boboPair.methods.getCurrentPrice().call().then(price => {
 										console.log(pairAddr, price);
@@ -121,7 +124,9 @@ const mutations = {
 			axios.get(url).then((marketInfo) => {
 				marketInfo.data.map(item => {
 					id2PairMap[currency + '-' + item.id].map(onePairInfo => {						
-						onePairInfo.high24h = item.price_change_percentage_24h.toFixed(2);	
+						onePairInfo.price24HPercent = item.price_change_percentage_24h.toFixed(2);	
+						onePairInfo.high24H = item.high_24h.toFixed(2);
+						onePairInfo.low24H = item.low_24h.toFixed(2);
 					})
 					
 				})

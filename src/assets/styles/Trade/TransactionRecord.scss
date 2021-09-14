@@ -1,5 +1,5 @@
 @import '../base.scss';
-.CurrentEntrust{
+.TransactionRecord{
   width: 100%;
   height: auto;
   display: flex;
@@ -35,14 +35,20 @@
         .type_asset{
           color: #71819A;
         }
-        .cancel{
-          width: 58px;
+        .status{
+          width: 80px;
           height: 18px;
           background: #1B55D1;
           border-radius: 2px;
           line-height: 18px;
           text-align: center;
           color: #fff;
+        }
+        .status-success {
+          background: #03AD8F !important;
+        }
+        .status-fail {
+          background: #DD4D40 !important;
         }
         .jiaoyi_status{
           width: 58px;

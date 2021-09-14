@@ -4,7 +4,7 @@
       <div class="view_left">
         <!-- <img :src="theme == 'dark' ? view_img1 : view_img2" /> -->
         <span class="assets">{{pairInfo.symbol}}/{{pairInfo.baseTokenName}}</span>
-        <span class="rate">{{ pairInfo.high24h > 0 ? "+" : null }}{{ pairInfo.high24h }}%</span>
+        <span class="rate">{{ pairInfo.price24HPercent > 0 ? "+" : null }}{{ pairInfo.price24HPercent }}%</span>
       </div>
       <div class="view_right">
         <img src="../../assets/images/view_img2.png" @click="chart" />
@@ -266,7 +266,7 @@ export default {
     }
     this.pairIntervalId = setInterval(() => {
       let pairInfos = this.$store.state.hangqing.filter(pairInfo => (pairInfo.symbol == this.pairInfo.symbol) && (pairInfo.baseTokenName == this.pairInfo.baseTokenName));
-      this.pairInfo.high24h =  pairInfos[0].high24h;
+      this.pairInfo.price24HPercent =  pairInfos[0].price24HPercent;
     }, 3000);
 
     if (this.$store.state.drizzle.contracts[this.pairInfo.baseTokenName] == null) {

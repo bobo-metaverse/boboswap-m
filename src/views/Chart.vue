@@ -9,16 +9,15 @@
     </div>
     <div class="data">
       <div class="data_left">
-        <span class="red_data">1.08</span>
+        <span class="red_data">{{pairInfo.currentPrice}} U</span>
         <div class="data_item2">
-          <span>6.93CNY</span>
-          <span>-0.08%</span>
+          <span>涨跌幅 {{pairInfo.price24HPercent}}%</span>
         </div>
       </div>
       <div class="data_right">
-        <div class="right_item"><span>高</span><span>1.11</span></div>
-        <div class="right_item"><span>低</span><span>1.01</span></div>
-        <div class="right_item"><span>24H</span><span>17315</span></div>
+        <div class="right_item"><span>高</span><span>{{pairInfo.high24H}} U</span></div>
+        <div class="right_item"><span>低</span><span>{{pairInfo.low24H}} U</span></div>
+        <div class="right_item"><span>24H</span><span>{{pairInfo.volumnOf24Hours}} U</span></div>
       </div>
     </div>
     <ChartChild />
@@ -36,7 +35,7 @@
           @click="list_index = 2"
           >成交</span
         >
-        <span v-if="pairInfo.introduce != null"
+        <span
           class="nav_text"
           :class="list_index == 3 ? 'list_nav_active' : null"
           @click="list_index = 3"
@@ -82,6 +81,7 @@ export default {
   },
   created:function() {
     this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"));
+    console.log(this.pairInfo)
   },
   components: { ChartChild, OrderRegistration, Introduction, Deal },
   methods: {

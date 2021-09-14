@@ -66,8 +66,8 @@
         </div>
         <div class="item_right">
           <div class="right_div1"><span>{{item.currentPrice}} U</span></div>
-          <span class="right_div2" :class="item.high24h > 0 ? 'up' : 'down'"
-            >{{ item.high24h > 0 ? "+" : null }}{{ item.high24h }}%</span
+          <span class="right_div2" :class="item.price24HPercent > 0 ? 'up' : 'down'"
+            >{{ item.price24HPercent > 0 ? "+" : null }}{{ item.price24HPercent }}%</span
           >
         </div>
       </div>
@@ -136,7 +136,7 @@ export default {
       this.$router.push("/search");
     },
     openTradePage(curPairInfo) {
-		  localStorage.setItem("CurPairInfo", JSON.stringify(curPairInfo));
+      localStorage.setItem("CurPairInfo", JSON.stringify(curPairInfo));
       this.openTrade(curPairInfo);
     }
   },

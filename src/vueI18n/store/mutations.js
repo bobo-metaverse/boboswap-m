@@ -57,7 +57,7 @@ const mutations = {
 							console.log(url, res);
 							return;
 						}
-						pairInfo.high24h = res.data[0].price_change_percentage_24h.toFixed(2);
+						pairInfo.price24HPercent = res.data[0].price_change_percentage_24h.toFixed(2);
 						state.hangqing.push(pairInfo);					
 					});
 
@@ -116,7 +116,7 @@ const mutations = {
 			axios.get(url).then((marketInfo) => {
 				marketInfo.data.map(item => {
 					id2PairMap[currency + '-' + item.id].map(onePairInfo => {
-						onePairInfo.high24h = item.price_change_percentage_24h.toFixed(2);	
+						onePairInfo.price24HPercent = item.price_change_percentage_24h.toFixed(2);	
 					})
 					
 				})
