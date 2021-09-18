@@ -6,7 +6,7 @@ const state = {
 	chainId: null,
 	web3: null,
 	drizzle: null,
-	hangqing: [],
+	hangqing: {},
 	
 }
 export default state

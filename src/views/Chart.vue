@@ -68,7 +68,7 @@ export default {
   name: "Chart",
   data() {
     return {
-      list_index: 2,
+      list_index: 1,
       view_img1: view_img1,
       view_img2: view_img2,
       pairInfo: {}

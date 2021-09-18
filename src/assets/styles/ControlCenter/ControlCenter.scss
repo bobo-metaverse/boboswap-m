@@ -62,7 +62,10 @@
       font-size: 27px;
       @include text-color(link_text);
       margin: 5px 0;
-      
+    }
+    i {
+      font-size: 18px;
+      @include text-color(title-text);
     }
   }
   .control{

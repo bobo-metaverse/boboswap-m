@@ -4,10 +4,10 @@
       <div class="nav_left">
         <!-- <span>自选</span> -->
         <span
-          v-for="(item, index) in TypeList"
+          v-for="(item, index) in baseTokenList"
           :key="index"
           :class="activeIndex == index ? 'active' : null"
-          @click="chageActiveIndex(index)"
+          @click="changeActiveIndex(index)"
           >{{ item.id }}</span
         >
       </div>
@@ -52,7 +52,7 @@
     <!-- list_data -->
     <div
       class="list"
-      v-for="(list, listIndex) in TypeList"
+      v-for="(list, listIndex) in baseTokenList"
       :key="listIndex"
       v-show="listIndex == activeIndex"
     >
@@ -83,9 +83,9 @@ export default {
   props: ["openTrade"],
   data() {
     return {
-      TypeList: [],
+      baseTokenList: [],
       intervalId: 0,
-      activeIndex: 0, //1:自选，2：HT,3:USDT
+      activeIndex: 0,
       syncCount: 0
     };
   },
@@ -97,38 +97,33 @@ export default {
   async created() {
     //console.log(this.chainId);
     //console.log(this.$store.state.hangqing);
-    this.intervalId = setInterval(this.showPairList, 1000);
+    this.showPairList();
+    this.intervalId = setInterval(this.showPairList, 5000);
   },
 
   methods: {
     showPairList() {
       let pairInfos = this.$store.state.hangqing;
-      let map = {};
-      if (pairInfos.length > 0) {
-        this.syncCount++;
-        if (this.syncCount == 5) {
-          clearInterval(this.intervalId);
-          this.intervalId = setInterval(this.showPairList, 15000);
-        }
-        for (let i = 0; i < pairInfos.length; i++) {
-          let ai = pairInfos[i];
-          if (!map[ai.baseTokenName]) {
-            map[ai.baseTokenName] = [ai];
+      let pairListByBaseToken = {};
+      Object.keys(pairInfos).forEach((pairKey) => {
+          const tokenNames = pairKey.split('-');
+          const baseTokenName = tokenNames[1];
+          if (!pairListByBaseToken[baseTokenName]) {
+            pairListByBaseToken[baseTokenName] = [pairInfos[pairKey]];
           } else {
-            map[ai.baseTokenName].push(ai);
+            pairListByBaseToken[baseTokenName].push(pairInfos[pairKey]);
           }
-        }
-        let res = [];
-        Object.keys(map).forEach((key) => {
-          res.push({
-            id: key,
-            data: map[key],
-          });
+      });
+      let allPairList = [];
+      Object.keys(pairListByBaseToken).forEach((baseTokenName) => {
+        allPairList.push({
+          id: baseTokenName,
+          data: pairListByBaseToken[baseTokenName],
         });
-        this.TypeList = res;
-      }
+      });
+      this.baseTokenList = allPairList;
     },
-    chageActiveIndex(index) {
+    changeActiveIndex(index) {
       this.activeIndex = index;
     },
     goSearch() {

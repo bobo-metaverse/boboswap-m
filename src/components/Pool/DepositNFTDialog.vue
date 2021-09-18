@@ -21,7 +21,7 @@
       </el-option>
     </el-select>
     <div class="seting_2">
-      <span>已选订单总权重: {{totalWeight}}</span>
+      <span>已选订单总权重: {{getReadableNumber(totalWeight, 6, 2)}} M</span>
       <el-checkbox v-model="checked" @change="checkAllNfts">全部抵押</el-checkbox>
     </div>
     
@@ -71,7 +71,7 @@ export default {
     syncAllDealedOrders() {
       this.boboFactory.methods.pairNumber().call().then(pairNumber => {
         pairNumber =parseInt(pairNumber);
-        for (var i = 0; i < 1; i++) {
+        for (var i = 0; i < pairNumber; i++) {
           this.boboFactory.methods.allPairs(i).call().then(pairAddr => {
             this.syncDealedOrdersOfOnePair(pairAddr);
           });
@@ -80,7 +80,7 @@ export default {
     },
     syncDealedOrdersOfOnePair(pairAddr) {
       console.log(pairAddr);
-      this.boboPairHelper.methods.getDepositableOrders_old(pairAddr, this.$store.state.account, this.nftStartTime, this.nftEndTime).call().then(orderInfos => {
+      this.boboPairHelper.methods.getDepositableOrders(pairAddr, this.$store.state.account, this.nftStartTime, this.nftEndTime).call().then(orderInfos => {
         console.log(orderInfos);
         const orderList = [];
         for (var i = 0; i < parseInt(orderInfos.count); i++) {
@@ -185,6 +185,7 @@ export default {
       }, 3000);
     },
     getReadableNumber(value, assetDecimal, displayDecimal) {
+      if (value == null) return 0;
       let renderValue = new BigNumber(value);
       renderValue = renderValue.shiftedBy(assetDecimal * -1);
 

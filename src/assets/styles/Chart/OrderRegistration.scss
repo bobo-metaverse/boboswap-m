@@ -18,40 +18,83 @@
       color: #657F9D;
     }
   }
-  .tdata{
+  .order_list {
     width: 100%;
+    height: auto;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 12px;
-    margin:10px 0 ;
-    .td_left,.td_center,.td_right{
+    justify-content: flex-start;
+    align-items: flex-start;
+    .tdata{
+      width: 100%;
+      height: auto;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
       justify-content: flex-start;
-      align-items: center;
-    }
-    .td_left :first-child{
-      color: #6B85A5;
-    }
-    .td_left :last-child{
-      @include text-color(text);
-      margin-left: 12px;
-    }
-    .td_center :first-child{
-      color: #03AD8F;
-    }
-    .td_center :last-child{
-      color: #D04B64;
-      margin-left: 10px;
-    }
-    .td_right :first-child{
-      @include text-color(text);
-    }
-    .td_right :last-child{
-      color: #6B85A5;
-      margin-left: 10px;
+      align-items: flex-start;
+      // width: 100%;
+      // display: flex;
+      // flex-direction: row;
+      // justify-content: space-between;
+      // align-items: center;
+      font-size: 12px;
+      margin:10px 0 ;
+      .list_one_side {
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-wrap:wrap;
+        justify-content:space-between;
+        align-content: flex-start;
+        //margin: 0 5px;
+        .order_item_buy {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: flex-start;
+          color: #03AD8F;
+          margin: 0 5px;
+        }
+        .order_item_sell {
+          width: 100%;
+          height: auto;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: flex-start;
+          color: #D04B64;
+          margin: 0 5px;
+        }
+      }
+      .td_left,.td_center,.td_right{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+      }
+      .td_left :first-child{
+        color: #6B85A5;
+      }
+      .td_left :last-child{
+        @include text-color(text);
+        margin-left: 12px;
+      }
+      .td_center :first-child{
+        color: #03AD8F;
+      }
+      .td_center :last-child{
+        color: #D04B64;
+        margin-left: 10px;
+      }
+      .td_right :first-child{
+        @include text-color(text);
+      }
+      .td_right :last-child{
+        color: #6B85A5;
+        margin-left: 10px;
+      }
     }
   }
+
 }

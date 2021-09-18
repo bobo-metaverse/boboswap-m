@@ -25,9 +25,9 @@ export default {
     await this.connectWallet();
     console.log('App.vue', drizzle);
     this.$store.dispatch("getHangQing");
-    setInterval(() => {
-      this.$store.dispatch("getTradeInfo");
-    }, 15000);
+    // setInterval(() => {
+    //   this.$store.dispatch("getHangQing");
+    // }, 5000);
   },
   methods: {},
   components: {},

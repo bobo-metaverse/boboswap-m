@@ -95,12 +95,12 @@
           class="shuliang_input"
           style="font-size: 12px"
           v-model="inTokenAmount"
-          @input="chageSlider"
+          @input="changeSlider"
         ></el-input>
         <span class="peer_token">{{buy_sell ? pairInfo.baseTokenName : pairInfo.symbol}}</span>
       </span>
       <div class="shuliang_right">
-        <span class="text_num">{{pairInfo.currentPrice}}</span>
+        <span class="text_num">{{currentPrice}}</span>
       </div>
     </div>
     <div class="slide_box">
@@ -122,8 +122,8 @@
         <div class="edu">
           <span>预计获得</span>
           <span>
-            {{ buy_sell ? ((inTokenAmount / (delegateType == 'limitedDelegate' ? limitedPrice : pairInfo.currentPrice)).toFixed(6) + ' ' + pairInfo.symbol)
-                        : ((inTokenAmount * (delegateType == 'limitedDelegate' ? limitedPrice : pairInfo.currentPrice)).toFixed(6) + ' ' + pairInfo.baseTokenName) }}
+            {{ buy_sell ? (delegateType == 'limitedDelegate' ? (inTokenAmount / limitedPrice).toFixed(6) : this.evaluatedAmountOut + ' ' + pairInfo.symbol)
+                        : (delegateType == 'limitedDelegate' ? (inTokenAmount * limitedPrice).toFixed(6) : this.evaluatedAmountOut + ' ' + pairInfo.baseTokenName) }}
           </span
           >
         </div>
@@ -223,6 +223,7 @@ export default {
     return {
       buy_sell: true,
       listInde: true,
+      currentPrice: 0,
       view_img1: view_img1,
       view_img2: view_img2,
       inTokenAmount: "",
@@ -258,21 +259,28 @@ export default {
       orderListedSize: 6,
       executingTx: false,
       refresh: true,
+      boboRouter: this.$store.state.drizzle.contracts.BoboRouter,
+      evaluatedAmountOut: 0
     };
   },
   created:function() {
     this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"));
     this.limitedPrice = this.pairInfo.currentPrice;
+    this.currentPrice = this.pairInfo.currentPrice;
     this.inTokenSymbol = this.pairInfo.symbol;
     this.slippagePercent = localStorage.getItem(this.pairInfo.pairAddr + '-slippagePercent');
     if (this.slippagePercent == null || this.slippagePercent == '') {
       this.slippagePercent = 0.1;
     }
-    this.pairIntervalId = setInterval(() => {
-      let pairInfos = this.$store.state.hangqing.filter(pairInfo => (pairInfo.symbol == this.pairInfo.symbol) && (pairInfo.baseTokenName == this.pairInfo.baseTokenName));
-      this.pairInfo.price24HPercent =  pairInfos[0].price24HPercent;
-    }, 3000);
 
+    // 每15秒更新一次价格和涨跌幅
+    this.pairIntervalId = setInterval(() => {
+      let pairInfo = this.$store.state.hangqing[this.pairInfo.symbol + '-' + this.pairInfo.baseTokenName];//.filter(pairInfo => (pairInfo.symbol == this.pairInfo.symbol) && (pairInfo.baseTokenName == this.pairInfo.baseTokenName));
+      this.pairInfo.price24HPercent =  pairInfo.price24HPercent;
+      this.currentPrice = pairInfo.currentPrice;
+    }, 15000);
+
+    // 获取baseToken合约对象
     if (this.$store.state.drizzle.contracts[this.pairInfo.baseTokenName] == null) {
       var baseTokenContract = {
         contractName: this.pairInfo.baseTokenName,
@@ -282,6 +290,7 @@ export default {
     }
     this.baseTokenContract = this.$store.state.drizzle.contracts[this.pairInfo.baseTokenName];
 
+    // 获取当前交易合约对象
     if (this.$store.state.drizzle.contracts[this.pairInfo.pairAddr] == null) {
       var pairContract = {
         contractName: this.pairInfo.pairAddr,
@@ -317,7 +326,7 @@ export default {
       //sliderChage
       this.inTokenAmount = (this.buy_sell ? this.baseTokenAmount : this.quoteTokenAmount) * value / 100;
     },
-    chageSlider(value) {
+    changeSlider(value) {
       //inputChange
       this.sliderValue = Number(value);
     },
@@ -382,8 +391,9 @@ export default {
               }
             );
           } else {  // 市价买单
-            const minOutAmount = '0x' + new BigNumber(this.inTokenAmount / this.pairInfo.currentPrice * (100 - this.slippagePercent) / 100).shiftedBy(this.pairInfo.decimals).toString(16);
+            const minOutAmount = '0x' + new BigNumber(this.evaluatedAmountOut).shiftedBy(this.pairInfo.decimals - 2).multipliedBy(100 - this.slippagePercent).toString(16);
             this.curStakeId = this.curPairContract.methods['addMarketOrder'].cacheSend(
+                                                                                    this.boboRouter.address,
                                                                                     true,
                                                                                     '0x' + new BigNumber(this.inTokenAmount).shiftedBy(6).toString(16),
                                                                                     minOutAmount,
@@ -418,11 +428,11 @@ export default {
         } else {  // 下单
           if (this.delegateType == 'limitedDelegate') {  // 限价单
             this.curStakeId = this.curPairContract.methods['addLimitedOrder'].cacheSend(
-              false,
-              '0x' + new BigNumber(this.limitedPrice).shiftedBy(6).toString(16),
-              '0x' + new BigNumber(this.inTokenAmount).shiftedBy(this.pairInfo.decimals).toString(16),
-              '0x' + new BigNumber(this.slippagePercent * 100).toString(16),
-              { from: this.$store.state.account });
+                                                                                      false,
+                                                                                      '0x' + new BigNumber(this.limitedPrice).shiftedBy(6).toString(16),
+                                                                                      '0x' + new BigNumber(this.inTokenAmount).shiftedBy(this.pairInfo.decimals).toString(16),
+                                                                                      '0x' + new BigNumber(this.slippagePercent * 100).toString(16),
+                                                                                      { from: this.$store.state.account });
             this.syncTxStatus(
               () => {
                 this.updateAll();
@@ -433,10 +443,12 @@ export default {
               }
             );
           } else {   // 市价单
-            const minOutAmount = '0x' + new BigNumber(this.inTokenAmount * this.pairInfo.currentPrice * (100 - this.slippagePercent) / 100).shiftedBy(6).toString(16);
+            const inAmount = '0x' + new BigNumber(this.inTokenAmount).shiftedBy(this.pairInfo.decimals).toString(16);
+            const minOutAmount = '0x' + new BigNumber(this.evaluatedAmountOut).shiftedBy(6 - 2).multipliedBy(100 - this.slippagePercent).integerValue().toString(16);            
             this.curStakeId = this.curPairContract.methods['addMarketOrder'].cacheSend(
-                                                                                    true,
-                                                                                    '0x' + new BigNumber(this.inTokenAmount).shiftedBy(6).toString(16),
+                                                                                    this.boboRouter.address,
+                                                                                    false,
+                                                                                    inAmount,
                                                                                     minOutAmount,
                                                                                     { from: this.$store.state.account });
 
@@ -513,6 +525,7 @@ export default {
         v.amount = 0;
       });
       pairContract.methods.getTotalOrderNumber(true).call().then(number => {
+        console.log("buy list number:", number);
         number = parseInt(number);
         if (number == 0) return;
         pairContract.methods.getOrderInfos(true, 0, number > this.orderSize ? this.orderSize : number).call().then(orderInfos => {
@@ -539,6 +552,7 @@ export default {
         v.amount = 0;
       });
       pairContract.methods.getTotalOrderNumber(false).call().then(number => {
+        console.log("sell list number:", number);
         number = parseInt(number);
         if (number == 0) return;
         pairContract.methods.getOrderInfos(false, 0, number > this.orderSize ? this.orderSize : number).call().then(orderInfos => {
@@ -605,6 +619,18 @@ export default {
           }
         });
       }
+    },
+    updateOutTokenAmount() {
+      if (this.inTokenAmount == null || this.inTokenAmount == '0' || this.inTokenAmount == '') return;
+      if (this.delegateType == 'limitedDelegate') return;
+
+      const inToken = this.buy_sell ? this.pairInfo.baseTokenAddr : this.pairInfo.address;
+      const outToken = this.buy_sell ? this.pairInfo.address : this.pairInfo.baseTokenAddr;
+      const inTokenAmount = '0x' + new BigNumber(this.inTokenAmount).shiftedBy(this.buy_sell ? 6 : this.pairInfo.decimals).toString(16);
+      this.boboRouter.methods.getBestSwapPath(inToken, outToken, inTokenAmount).call().then(result => {
+        this.evaluatedAmountOut = this.getReadableNumber(result.bestResultInfo.totalAmountOut, this.buy_sell ? this.pairInfo.decimals : 6, 6);
+        console.log(this.evaluatedAmountOut)
+      });
     }
   },
   watch: {
@@ -619,6 +645,10 @@ export default {
         this.toast("error", "您的余额不足");
       }
       this.checkERC20Approved();
+      this.updateOutTokenAmount();
+    },
+    "currentPrice": function () {
+      this.updateOutTokenAmount();
     }
   }
 };

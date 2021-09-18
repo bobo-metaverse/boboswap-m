@@ -55,7 +55,7 @@
                 "symbol": "UNI",
                 "decimals": 18,
                 "address": "0xb33EaAd8d922B1083446DC23f610c2567fB5180f",
-                "coingeckoId": "binance-peg-uniswap"
+                "coingeckoId": "uniswap"
             },
             {
                 "name": "Aave Token",
@@ -70,7 +70,7 @@
               "baseTokenName": "USDT",
               "coingecko_currency": "usd",
               "baseTokenAddr": "0xc2132D05D31c914a87C6611C10748AEb04B58e8F",
-              "peerTokens": [
+              "quoteTokens": [
                   "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
                   "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
                   "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6", 
@@ -85,7 +85,7 @@
               "baseTokenName": "USDC",
               "coingecko_currency": "usd",
               "baseTokenAddr": "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174",
-              "peerTokens": [
+              "quoteTokens": [
                 "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
                 "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619",
                 "0x1BFD67037B42Cf73acF2047067bd4F2C47D9BfD6", 
@@ -148,7 +148,7 @@
             "baseTokenName": "HUSD",
             "coingecko_currency": "usd",
             "baseTokenAddr": "0x0298c2b32eaE4da002a15f36fdf7615BEa3DA047",
-            "peerTokens": [
+            "quoteTokens": [
                 "0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F",
                 "0xa71EdC38d189767582C38A3145b5873052c3e47a",
                 "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa",
@@ -160,7 +160,7 @@
             "baseTokenName": "USDT",
             "coingecko_currency": "usd",
             "baseTokenAddr": "0xa71EdC38d189767582C38A3145b5873052c3e47a",
-            "peerTokens": [
+            "quoteTokens": [
                 "0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F",
                 "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa",
                 "0x64FF637fB478863B7468bc97D30a5bF3A428a1fD",
@@ -171,7 +171,7 @@
             "baseTokenName": "ETH",
             "coingecko_currency": "eth",
             "baseTokenAddr": "0x64FF637fB478863B7468bc97D30a5bF3A428a1fD",
-            "peerTokens": [
+            "quoteTokens": [
                 "0x66a79D23E58475D2738179Ca52cd0b41d73f0BEa",
                 "0x25D2e80cB6B86881Fd7e07dd263Fb79f4AbE033c"
             ]
@@ -264,7 +264,7 @@
           "baseTokenName": "BUSD",
           "coingecko_currency": "usd",
           "baseTokenAddr": "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56",
-          "peerTokens": [
+          "quoteTokens": [
               "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", 
               "0x55d398326f99059fF775485246999027B3197955",  
               "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",  
@@ -281,7 +281,7 @@
           "baseTokenName": "USDT",
           "coingecko_currency": "usd",
           "baseTokenAddr": "0x55d398326f99059fF775485246999027B3197955",
-          "peerTokens": [
+          "quoteTokens": [
             "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c", 
             "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c", 
             "0x2170Ed0880ac9A755fd29B2688956BD959F933F8", 
@@ -297,7 +297,7 @@
           "baseTokenName": "ETH",
           "coingecko_currency": "eth",
           "baseTokenAddr": "0x2170Ed0880ac9A755fd29B2688956BD959F933F8",
-          "peerTokens": [
+          "quoteTokens": [
             "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c"
           ]
         }
@@ -382,7 +382,7 @@
             "baseTokenName": "WETH",
             "coingecko_currency": "eth",
             "baseTokenAddr": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-            "peerTokens": [
+            "quoteTokens": [
                 "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
                 "0xdAC17F958D2ee523a2206206994597C13D831ec7",
                 "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -398,7 +398,7 @@
             "baseTokenName": "USDT",
             "coingecko_currency": "usd",
             "baseTokenAddr": "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-            "peerTokens": [
+            "quoteTokens": [
                 "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
                 "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
                 "0x6B175474E89094C44Da98b954EedeAC495271d0F", 
@@ -413,7 +413,7 @@
             "baseTokenName": "USDC",
             "coingecko_currency": "usd",
             "baseTokenAddr": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-            "peerTokens": [
+            "quoteTokens": [
                 "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
                 "0x6B175474E89094C44Da98b954EedeAC495271d0F",
                 "0x514910771AF9Ca656af840dff83E8264EcF986CA",

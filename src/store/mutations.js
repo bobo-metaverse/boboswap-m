@@ -3,6 +3,8 @@ import * as API from "../assets/js/Common/API"
 import axios from 'axios'
 import BigNumber from 'bignumber.js'
 import BoboPair from "../assets/contracts/abi/BoboPair.json";
+import AllPairsInfo from "../assets/js/Common/assetInfo.json";
+
 const mutations = {
   [TYPES.CHANGE_SKIN](state, v) {
 		state.skin = v;
@@ -29,109 +31,117 @@ const mutations = {
 		console.log('TYPES.SET_DRIZZLE', v);
 	},
 	[TYPES.GET_HANGQING](state) {
-		state.hangqing = [];
+		state.hangqing = {};
 		let chainId = state.chainId.toString()
-		axios.get(API.getQuotation).then((quotation) => {
-			//console.log(quotation)
-			const list = quotation.data[chainId];
-			let assets = {};
-			list.assets.map(asset => {
-				assets[asset.address] = asset;
-			})
-			for (var i = 0; i < list.pairs.length; i++) {
-				const pairBaseInfo = list.pairs[i];
-				for (var j = 0; j < pairBaseInfo.peerTokens.length; j++) {
-					const peerAddr = pairBaseInfo.peerTokens[j];
-					//var pairInfo = assets[peerAddr];
-					if (assets[peerAddr] == null) {
-						console.log(peerAddr + ' has no token info.')
-						return;
-					}
-					const pairInfo = JSON.parse(JSON.stringify(assets[peerAddr]));
-					pairInfo.baseTokenAddr = pairBaseInfo.baseTokenAddr;
-					pairInfo.baseTokenName = pairBaseInfo.baseTokenName;
-					pairInfo.coingecko_currency = pairBaseInfo.coingecko_currency;
-					
-					//24H涨跌幅
-					let url = API.getRiseFall + "vs_currency=" + pairInfo.coingecko_currency + "&ids=" + pairInfo.coingeckoId;
-					axios.get(url).then((res) => {
-						if (pairInfo == null) {
-							console.log(url, res);
-							return;
-						}
-						if (res.data != null && res.data.length > 0) {
-							pairInfo.price24HPercent = res.data[0].price_change_percentage_24h.toFixed(2);
-							pairInfo.high24H = res.data[0].high_24h.toFixed(2);
-							pairInfo.low24H = res.data[0].low_24h.toFixed(2);
-						}
-						state.hangqing.push(pairInfo);					
-					});
 
-					// 24成交量
-					const interverId = setInterval(() => {
-						const boboFactory = state.drizzle.contracts.BoboFactory;
-						if (boboFactory == null) return;
-						clearInterval(interverId);
-						boboFactory.methods
-							.getPair(peerAddr, pairBaseInfo.baseTokenAddr)
-							.call()
-							.then((pairAddr) => {
-								if (pairAddr != '0x0000000000000000000000000000000000000000') {
-									//console.log(pairAddr, '=>', peerAddr, pairBaseInfo.baseTokenAddr);
-									pairInfo.pairAddr = pairAddr;
-									const boboPair = new state.web3.eth.Contract(BoboPair.abi, pairAddr);
-									boboPair.methods.volumnOf24Hours().call().then(volumn => {
-										pairInfo.volumnOf24Hours = new BigNumber(volumn).shiftedBy(-6);
-									});
-									boboPair.methods.getCurrentPrice().call().then(price => {
-										console.log(pairAddr, price);
-										pairInfo.currentPrice = new BigNumber(price).shiftedBy(-6);
-									});
-									
-								} else {
-									pairInfo.volumnOf24Hours = 0;
-								}
-							});
-					}, 1000);
-					
-
-					// 聚合价
-				}
-			}
+		const pairsOnChain = AllPairsInfo[chainId];
+		let assets = {};
+		let coingeckoIds = '';
+		pairsOnChain.assets.map(asset => {
+			assets[asset.address] = asset;
+			coingeckoIds += asset.coingeckoId + ',';
 		});
+
+		var baseTokenFirstName;
+		var baseTokenFirstAddr;
+		var quoteAddrsOfFirst;
+		var baseTokenSecondName;
+		var baseTokenSecondAddr;
+		var quoteAddrsOfSecond;
+		for (var i = 0; i < pairsOnChain.pairs.length; i++) {
+			const pairBaseInfo = pairsOnChain.pairs[i];
+			if (i == 0) {
+				baseTokenFirstName = pairBaseInfo.baseTokenName;
+				baseTokenFirstAddr = pairBaseInfo.baseTokenAddr;
+				quoteAddrsOfFirst = pairBaseInfo.quoteTokens;
+			} else if (i == 1) {
+				baseTokenSecondName = pairBaseInfo.baseTokenName;
+				baseTokenSecondAddr = pairBaseInfo.baseTokenAddr;
+				quoteAddrsOfSecond = pairBaseInfo.quoteTokens;
+			}
+			for (var j = 0; j < pairBaseInfo.quoteTokens.length; j++) {
+				const peerAddr = pairBaseInfo.quoteTokens[j];
+				//var pairInfo = assets[peerAddr];
+				if (assets[peerAddr] == null) {
+					console.log(peerAddr + ' has no token info.')
+					return;
+				}
+				const pairInfo = JSON.parse(JSON.stringify(assets[peerAddr]));
+				pairInfo.baseTokenAddr = pairBaseInfo.baseTokenAddr;
+				pairInfo.baseTokenName = pairBaseInfo.baseTokenName;
+				pairInfo.coingecko_currency = pairBaseInfo.coingecko_currency;
+				state.hangqing[pairInfo.symbol + '-' + pairInfo.baseTokenName] = pairInfo;				
+			}
+		}
+
+		const getPairInfoFromCoingeck = () => {
+			let url = API.getRiseFall + "vs_currency=usd&ids=" + coingeckoIds;
+			axios.get(url).then((coinInfos) => {
+				if (coinInfos.data != null && coinInfos.data.length > 0) {
+					for (var i = 0; i < coinInfos.data.length; i++) {
+						const coinInfo = coinInfos.data[i];
+						for (var j = 0; j < pairsOnChain.pairs.length; j++) {
+							const pairBaseInfo = pairsOnChain.pairs[j];
+							const pairKey = coinInfo.symbol.toUpperCase() + '-' + pairBaseInfo.baseTokenName;
+							if (state.hangqing[pairKey] == null) {
+								continue;
+							}
+							state.hangqing[pairKey].price24HPercent = coinInfo.price_change_percentage_24h.toFixed(2);
+							state.hangqing[pairKey].high24H = coinInfo.high_24h.toFixed(2);
+							state.hangqing[pairKey].low24H = coinInfo.low_24h.toFixed(2);
+						}
+					}
+				}				
+			});
+		}
+		var intervalId = 0;
+		const getPriceAndVolumn = () => {
+			const boboFactory = state.drizzle.contracts.BoboFactory;
+			const boboPairHelper = state.drizzle.contracts.BoboPairHelper;
+			const boboRouter = state.drizzle.contracts.BoboRouter;
+			if (boboFactory == null) {
+				console.log('null factory');
+				return;
+			}
+			clearInterval(intervalId);
+			boboPairHelper.methods.getPairInfo(boboFactory.address, boboRouter.address, quoteAddrsOfFirst, baseTokenFirstAddr, quoteAddrsOfSecond, baseTokenSecondAddr).call().then(result => {
+				// uint256[] memory pricesOfUsdt, uint256[] memory volumnsOfUsdt, uint256[] memory pricesOfUsdc, uint256[] memory volumnsOfUsdc
+				for (var i = 0; i < quoteAddrsOfFirst.length; i++) {
+					const assetInfo = assets[quoteAddrsOfFirst[i]];
+					const pairKey = assetInfo.symbol + '-' + baseTokenFirstName;
+					if (state.hangqing[pairKey] == null) {
+						console.log(pairKey, " not exist in contract!");
+						continue;
+					}
+					state.hangqing[pairKey].currentPrice = new BigNumber(result.pricesOfUsdt[i]).shiftedBy(-6);
+					state.hangqing[pairKey].volumnOf24Hours = new BigNumber(result.volumnsOfUsdt[i]).shiftedBy(-6);
+				}
+				for (var j = 0; j < quoteAddrsOfSecond.length; j++) {
+					const assetInfo = assets[quoteAddrsOfSecond[j]];
+					const pairKey = assetInfo.symbol + '-' + baseTokenSecondName;
+					if (state.hangqing[pairKey] == null) {
+						console.log(pairKey, " not exist in contract!");
+						continue;
+					}
+					state.hangqing[pairKey].currentPrice = new BigNumber(result.pricesOfUsdc[i]).shiftedBy(-6);
+					state.hangqing[pairKey].volumnOf24Hours = new BigNumber(result.volumnsOfUsdc[i]).shiftedBy(-6);
+				}
+			})
+		}
+
+		getPairInfoFromCoingeck();
+		intervalId = setInterval(() => {
+			getPriceAndVolumn();
+		}, 1000);
+		getPriceAndVolumn();
+		setInterval(() => {
+			console.log("update");
+			getPairInfoFromCoingeck();
+			getPriceAndVolumn();
+		}, 15000);
 	},
 	[TYPES.GET_TRADEINFO](state) {
-		let coingeckoMap = {};
-		let id2PairMap = {};
-		state.hangqing.map(pairInfo => {
-			if (id2PairMap[pairInfo.coingecko_currency + '-' + pairInfo.coingeckoId] == null) {
-				id2PairMap[pairInfo.coingecko_currency + '-' + pairInfo.coingeckoId] = [];
-				id2PairMap[pairInfo.coingecko_currency + '-' + pairInfo.coingeckoId].push(pairInfo);
-			} else {
-				id2PairMap[pairInfo.coingecko_currency + '-' + pairInfo.coingeckoId].push(pairInfo);
-			}
-
-			if (coingeckoMap[pairInfo.coingecko_currency] == null) {
-				coingeckoMap[pairInfo.coingecko_currency] = [];
-				coingeckoMap[pairInfo.coingecko_currency].push(pairInfo.coingeckoId);
-			} else {
-				coingeckoMap[pairInfo.coingecko_currency].push(pairInfo.coingeckoId);
-			}
-		});
-		Object.keys(coingeckoMap).forEach((currency) => {
-			let coingeckoIds = coingeckoMap[currency].join();
-			let url = API.getRiseFall + "vs_currency=" + currency + "&ids=" + coingeckoIds;
-			axios.get(url).then((marketInfo) => {
-				marketInfo.data.map(item => {
-					id2PairMap[currency + '-' + item.id].map(onePairInfo => {						
-						onePairInfo.price24HPercent = item.price_change_percentage_24h.toFixed(2);	
-						onePairInfo.high24H = item.high_24h.toFixed(2);
-						onePairInfo.low24H = item.low_24h.toFixed(2);
-					})
-					
-				})
-			});
-		});
+		
 	}
 }
 export default mutations

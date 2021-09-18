@@ -20,22 +20,31 @@
       color: #657F9D;
     }
   }
-  .td_data{
+  .list_one_side {
     width: 100%;
-    padding: 10px 0;
-    font-size: 12px;
+    height: auto;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    .time,.price,.num{
-      @include text-color(text);
-    }
-    .buy{
-      color: #03AD8F;
-    }
-    .sell{
-      color: #D04B64;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    align-content: flex-start;
+    .td_data{
+      width: 100%;
+      padding: 3px 0;
+      font-size: 12px;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      .time,.price,.num{
+        width: 20%;
+        @include text-color(text);
+      }
+      .buy{
+        color: #03AD8F;
+      }
+      .sell{
+        color: #D04B64;
+      }
     }
   }
 }

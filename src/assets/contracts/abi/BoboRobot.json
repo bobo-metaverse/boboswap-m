@@ -1,0 +1,321 @@
+{
+  "contractName": "BoboRobot",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.6.12+commit.27d51765\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/BoboRobot.sol\":\"BoboRobot\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/BoboRobot.sol\":{\"keccak256\":\"0x129c06cd608dfcc52a3d021bc0d9ad4a675411094f257d148ddd31a0d0895b01\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://2f28b037fbf04a3c4b14054a7214dbd278f00854589e65ca0ba3e06a633ad362\",\"dweb:/ipfs/Qmcft2E3c2xe7qAb2eyM81cyXXA4QiJPnT2i9DAr7THDeG\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea2646970667358221220c8065d5bdc2820bb1b09b6c3be8530b17b4591f5631b6f8015af6132a334c33c64736f6c634300060c0033",
+  "deployedBytecode": "0x6080604052600080fdfea2646970667358221220c8065d5bdc2820bb1b09b6c3be8530b17b4591f5631b6f8015af6132a334c33c64736f6c634300060c0033",
+  "immutableReferences": {},
+  "sourceMap": "181:2598:26:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "181:2598:26:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\npragma solidity ^0.6.0;\npragma experimental ABIEncoderV2;\n\n\ninterface IBoboPair {\n    function getCurrentPrice() external view returns(uint256);\n}\n\n\ncontract BoboRobot {\n    \n    // function executeInnerOrder(uint256 _orderId) private returns(uint256 amountOut) {\n    //     NFTInfo memory orderInfo = orderNFT.getOrderInfo(_orderId); \n    //     (address inToken, address outToken) = orderInfo.bBuyQuoteToken ? (baseToken, quoteToken) : (quoteToken, baseToken);\n        \n    //     uint256 deductAmount = exManager.deductTradeFee(orderInfo.owner, inToken, orderInfo.inAmount);\n    //     if (deductAmount > 0) {\n    //         ERC20(inToken).transferFrom(msg.sender, address(exManager), deductAmount);\n    //     }\n    //     uint256 amountIn = orderInfo.inAmount.sub(deductAmount);\n\n    //     (, ResultInfo memory bestSwapInfo) = boboRouter.getBestSwapPath(inToken, outToken, amountIn);\n    //     if (bestSwapInfo.totalAmountOut >= orderInfo.minOutAmount) {\n    //         if (boboFarmer.tokenPidMap(inToken) > 0) {\n    //             boboFarmer.withdraw(inToken, orderInfo.owner, amountIn);\n    //         }\n    //         amountOut = swap(_orderId, bestSwapInfo, inToken, outToken, amountIn, true);\n    //     } else {\n    //         setExceptionOrder(_orderId, \"Amount out can NOT satisfy the min amount out of order.\");\n    //     }\n    // }\n    \n    // // 执行一笔买单或卖单（满足价格条件）\n    // function executeHeaderOrder(address _pairAddr) public returns(bool) {\n    //     uint256 currentPrice = IBoboPair(_pairAddr).getCurrentPrice();\n        \n    //     (bool existOfBuy, uint256 orderIdOfBuy) = getHeaderOrderIndex(true);\n    //     uint256 highestPriceOfBuy = existOfBuy ? getValue(orderIdOfBuy) : 0;\n        \n    //     (bool existOfSell, uint256 orderIdOfSell) = getHeaderOrderIndex(false);\n    //     uint256 lowestPriceOfSell = existOfSell ? getValue(orderIdOfSell) : uint256(-1);\n        \n    //     uint256 executedOrderId = 0;\n    //     if (currentPrice <= highestPriceOfBuy) {\n    //         executedOrderId = orderIdOfBuy;\n    //     } else if (currentPrice > lowestPriceOfSell) {\n    //         executedOrderId = orderIdOfSell;\n    //     }\n    //     if (executedOrderId > 0) {  \n    //         executeInnerOrder(executedOrderId);\n    //         return true;\n    //     }\n    //     return false;\n    // }\n\n    // // 根据配置连续检查并执行多笔订单\n    // // 当当前价格不满足要求时，便退出\n    // function checkOrderList() public {\n    //     uint256 maxOrderNumberPerMatch = exManager.maxOrderNumberPerMatch();\n    //     while(maxOrderNumberPerMatch-- > 0) {\n    //         bool result = executeHeaderOrder();\n    //         if (!result) break;\n    //     }\n    // }\n}",
+  "sourcePath": "/Users/mryu/blockchain/bobo-metaverse/boboswap-contract/contracts/BoboRobot.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/BoboRobot.sol",
+    "exportedSymbols": {
+      "BoboRobot": [
+        8870
+      ],
+      "IBoboPair": [
+        8869
+      ]
+    },
+    "id": 8871,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 8862,
+        "literals": [
+          "solidity",
+          "^",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "32:23:26"
+      },
+      {
+        "id": 8863,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "56:33:26"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 8869,
+        "linearizedBaseContracts": [
+          8869
+        ],
+        "name": "IBoboPair",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": null,
+            "functionSelector": "eb91d37e",
+            "id": 8868,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getCurrentPrice",
+            "nodeType": "FunctionDefinition",
+            "overrides": null,
+            "parameters": {
+              "id": 8864,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "142:2:26"
+            },
+            "returnParameters": {
+              "id": 8867,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 8866,
+                  "mutability": "mutable",
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "overrides": null,
+                  "scope": 8868,
+                  "src": "167:7:26",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 8865,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "167:7:26",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "166:9:26"
+            },
+            "scope": 8869,
+            "src": "118:58:26",
+            "stateMutability": "view",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 8871,
+        "src": "92:86:26"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 8870,
+        "linearizedBaseContracts": [
+          8870
+        ],
+        "name": "BoboRobot",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 8871,
+        "src": "181:2598:26"
+      }
+    ],
+    "src": "32:2747:26"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "project:/contracts/BoboRobot.sol",
+      "exportedSymbols": {
+        "BoboRobot": [
+          8870
+        ],
+        "IBoboPair": [
+          8869
+        ]
+      },
+      "license": "MIT"
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            "^",
+            "0.6",
+            ".0"
+          ]
+        },
+        "id": 8862,
+        "name": "PragmaDirective",
+        "src": "32:23:26"
+      },
+      {
+        "attributes": {
+          "literals": [
+            "experimental",
+            "ABIEncoderV2"
+          ]
+        },
+        "id": 8863,
+        "name": "PragmaDirective",
+        "src": "56:33:26"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "interface",
+          "documentation": null,
+          "fullyImplemented": false,
+          "linearizedBaseContracts": [
+            8869
+          ],
+          "name": "IBoboPair",
+          "scope": 8871
+        },
+        "children": [
+          {
+            "attributes": {
+              "body": null,
+              "documentation": null,
+              "functionSelector": "eb91d37e",
+              "implemented": false,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "getCurrentPrice",
+              "overrides": null,
+              "scope": 8869,
+              "stateMutability": "view",
+              "virtual": false,
+              "visibility": "external"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 8864,
+                "name": "ParameterList",
+                "src": "142:2:26"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "mutability": "mutable",
+                      "name": "",
+                      "overrides": null,
+                      "scope": 8868,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint256",
+                          "type": "uint256"
+                        },
+                        "id": 8865,
+                        "name": "ElementaryTypeName",
+                        "src": "167:7:26"
+                      }
+                    ],
+                    "id": 8866,
+                    "name": "VariableDeclaration",
+                    "src": "167:7:26"
+                  }
+                ],
+                "id": 8867,
+                "name": "ParameterList",
+                "src": "166:9:26"
+              }
+            ],
+            "id": 8868,
+            "name": "FunctionDefinition",
+            "src": "118:58:26"
+          }
+        ],
+        "id": 8869,
+        "name": "ContractDefinition",
+        "src": "92:86:26"
+      },
+      {
+        "attributes": {
+          "abstract": false,
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            8870
+          ],
+          "name": "BoboRobot",
+          "nodes": [
+            null
+          ],
+          "scope": 8871
+        },
+        "id": 8870,
+        "name": "ContractDefinition",
+        "src": "181:2598:26"
+      }
+    ],
+    "id": 8871,
+    "name": "SourceUnit",
+    "src": "32:2747:26"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.6.12+commit.27d51765.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-09-04T16:17:04.618Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}

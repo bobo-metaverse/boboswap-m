@@ -11,8 +11,19 @@
     <div class="user_center" v-else>
       <img src="../../assets/images/user_center_img.png" />
       <span class="address">{{ account.substr(0, 6) + "..." + account.substr(account.length - 3) }}</span>
-      <span class="total_asset">账户挂单总资产折合(USDT)</span>
-      <span class="total_num">0.00000000</span>
+      <div>
+        <span class="total_asset">充值余额</span>
+        <el-popover
+          placement="top"
+          width="200"
+          trigger="click"
+          content="充值的USDT，可以按时价抵扣交易中的Token手续费(本平台会额外收取0.05%)，从而降低滑点，提高交易成功率，
+          譬如您出售10000个TokenA, 原来需要扣除5个TokenA作为平台手续费，现在扣除您5 USDT即可(假设1 TokenA = 1 USDT)"
+        >
+          <i class="iconfont icon-help help" slot="reference"></i>
+        </el-popover>
+      </div>
+      <span class="total_num">{{usdtAmount}} U</span>
     </div>
     <div class="control">
       <div class="control_item">
@@ -121,6 +132,7 @@ let img4_4 = require("../../assets/images/control_img4_4.png");
 let img5 = require("../../assets/images/control_img5.png");
 let img5_5 = require("../../assets/images/control_img5_5.png");
 
+import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { myMixins } from "../../assets/js/Wallet/ConnectWallet.js";
 export default {
@@ -146,7 +158,14 @@ export default {
       skin: localStorage.getItem("Skin") == "dark" ? 1 : 2,
       showAction: false,
       web3: null,
+      exManager: this.$store.state.drizzle.contracts.EXManager,
+      usdtAmount: 0,
     };
+  },
+  created() {
+    this.exManager.methods.usableTradePointsMap(this.$store.state.account).call().then(usdtAmount => {
+      this.usdtAmount = this.getReadableNumber(usdtAmount, 6, 6);
+    })
   },
   watch: {
     theme(newThem) {
@@ -173,6 +192,19 @@ export default {
       this.skin = n;
       this.theme = localStorage.getItem("Skin") == "dark" ? "light" : "dark";
       localStorage.setItem("Skin", this.theme);
+    },
+    getReadableNumber(value, assetDecimal, displayDecimal) {
+      let renderValue = new BigNumber(value);
+      renderValue = renderValue.shiftedBy(assetDecimal * -1);
+
+      let decimalPlaces = assetDecimal > 6 ? 6 : assetDecimal;
+      if (renderValue.comparedTo(new BigNumber(0.000001)) < 0) {
+        decimalPlaces = assetDecimal;
+      }
+
+      BigNumber.config({ DECIMAL_PLACES: displayDecimal == null ? decimalPlaces : displayDecimal });
+      renderValue = renderValue.toString(10);
+      return renderValue;
     },
   },
 };
