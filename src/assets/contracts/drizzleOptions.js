@@ -10,6 +10,8 @@ import StratMaticSushi from "./abi/StratMaticSushi.json";
 import BoboMasterChef from "./abi/BoboMasterChef.json";
 import BoboFarmer4TradeMining from "./abi/BoboFarmer4TradeMining.json";
 import BoboPairHelper from "./abi/BoboPairHelper.json";
+import Loot from "./abi/Loot.json";
+import USDT from "./abi/USDT.json";
 
 
 // OrderNFT.networks['137'] = {address: '0x04673384398379a84d05895456AE02fc05B4a509'};
@@ -27,7 +29,9 @@ const options = {
     customProvider: new Web3(window.ethereum),
   },
   contracts: [
-    OrderNFT, OrderDetailNFT, BoboToken, BoboFactory, BoboRouter, EXManager, StratMaticSushi, BoboFarmer, BoboMasterChef, BoboFarmer4TradeMining, BoboPairHelper
+    OrderNFT, OrderDetailNFT, BoboToken, BoboFactory, BoboRouter, EXManager, 
+    StratMaticSushi, BoboFarmer, BoboMasterChef, BoboFarmer4TradeMining, BoboPairHelper, 
+    Loot, USDT
   ],
   events: {
   },

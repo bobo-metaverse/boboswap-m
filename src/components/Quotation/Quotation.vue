@@ -131,7 +131,10 @@ export default {
       this.$router.push("/search");
     },
     openTradePage(curPairInfo) {
-      localStorage.setItem("CurPairInfo", JSON.stringify(curPairInfo));
+      const chainId = this.$store.state.chainId;
+      const pairInfo = {};
+      pairInfo[chainId] = curPairInfo;
+      localStorage.setItem("CurPairInfo", JSON.stringify(pairInfo));
       this.openTrade(curPairInfo);
     }
   },

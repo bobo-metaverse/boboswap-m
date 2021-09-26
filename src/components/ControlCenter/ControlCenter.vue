@@ -12,35 +12,24 @@
       <img src="../../assets/images/user_center_img.png" />
       <span class="address">{{ account.substr(0, 6) + "..." + account.substr(account.length - 3) }}</span>
       <div>
-        <span class="total_asset">充值余额</span>
+        <span class="total_asset">手续费可抵扣余额</span>
         <el-popover
           placement="top"
           width="200"
           trigger="click"
           content="充值的USDT，可以按时价抵扣交易中的Token手续费(本平台会额外收取0.05%)，从而降低滑点，提高交易成功率，
-          譬如您出售10000个TokenA, 原来需要扣除5个TokenA作为平台手续费，现在扣除您5 USDT即可(假设1 TokenA = 1 USDT)"
+          举例：假设您出售10000个TokenA, 原来需要扣除5个TokenA作为平台手续费，现在扣除您充值账户中的5 USDT即可(以1TokenA = 1USDT为例)"
         >
           <i class="iconfont icon-help help" slot="reference"></i>
         </el-popover>
       </div>
-      <span class="total_num">{{usdtAmount}} U</span>
+      <span class="total_num">{{usdtAmount}} USDT</span>
+      <span class="deposit_btn" @click="buyTradePoints">充值</span>
     </div>
     <div class="control">
       <div class="control_item">
-        <img :src="theme == 'dark' ? img1 : img1_1" />
-        <span>流动性挖矿</span>
-      </div>
-      <div class="control_item">
         <img :src="theme == 'dark' ? img2 : img2_2" />
-        <span>DAO</span>
-      </div>
-      <div class="control_item">
-        <img :src="theme == 'dark' ? img3 : img3_3" />
-        <span>交易挖矿</span>
-      </div>
-      <div class="control_item">
-        <img :src="theme == 'dark' ? img4 : img4_4" />
-        <span>跨链桥</span>
+        <span>DAO(敬请期待)</span>
       </div>
       <div class="control_item seting">
         <img :src="theme == 'dark' ? img5 : img5_5" />
@@ -116,6 +105,15 @@
         </div>
       </div>
     </div>
+    <el-dialog
+        title="充值"
+        :visible="depositDialogVisible"
+        width="90%"
+        center
+        @close="depositDialogVisible = false"
+      >
+      <TradePointDialog @close="closeDepositDialog"/>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -135,6 +133,7 @@ let img5_5 = require("../../assets/images/control_img5_5.png");
 import BigNumber from "bignumber.js";
 import Web3 from "web3";
 import { myMixins } from "../../assets/js/Wallet/ConnectWallet.js";
+import TradePointDialog from "./TradePointDialog";
 export default {
   name: "ControlCenter",
   mixins: [myMixins],
@@ -160,8 +159,10 @@ export default {
       web3: null,
       exManager: this.$store.state.drizzle.contracts.EXManager,
       usdtAmount: 0,
+      depositDialogVisible: false
     };
   },
+  components: { TradePointDialog },
   created() {
     this.exManager.methods.usableTradePointsMap(this.$store.state.account).call().then(usdtAmount => {
       this.usdtAmount = this.getReadableNumber(usdtAmount, 6, 6);
@@ -192,6 +193,12 @@ export default {
       this.skin = n;
       this.theme = localStorage.getItem("Skin") == "dark" ? "light" : "dark";
       localStorage.setItem("Skin", this.theme);
+    },
+    buyTradePoints() {
+      this.depositDialogVisible = true;
+    },
+    closeDepositDialog() {
+      this.depositDialogVisible = false;
     },
     getReadableNumber(value, assetDecimal, displayDecimal) {
       let renderValue = new BigNumber(value);

@@ -63,6 +63,16 @@
       @include text-color(link_text);
       margin: 5px 0;
     }
+    .deposit_btn{
+      width: 70px;
+      height: 30px;
+      text-align: center;
+      line-height: 30px;
+      color: #fff;
+      background: #18A15E;
+      font-size: 14px;
+      border-radius: 5px;
+    }
     i {
       font-size: 18px;
       @include text-color(title-text);

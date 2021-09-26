@@ -34,6 +34,13 @@ export default {
       pairInfo: ''
     };
   },
+  created() {
+    const curIndex = localStorage.getItem('curIndex');
+    if (curIndex == 2) {
+      this.navIndx = 2;
+      localStorage.setItem('curIndex', 0);
+    }
+  },
   methods: {
     openTrade(pairInfo) {
       //console.log(pairInfo);

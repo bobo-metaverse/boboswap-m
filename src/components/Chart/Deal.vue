@@ -36,7 +36,7 @@ export default {
     };
   },
   created:function() {
-    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"));
+    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"))[this.$store.state.chainId];
     if (this.$store.state.drizzle.contracts[this.pairInfo.pairAddr] == null) {
       var pairContract = {
         contractName: this.pairInfo.pairAddr,
@@ -92,7 +92,7 @@ export default {
       var renderTime = new BigNumber(timestamp);
       renderTime = renderTime.shiftedBy(3);
       var date = new Date(renderTime.toNumber());
-      return date.format("hh:mm:ss"); // +  '.' + (date.getMilliseconds() + 1000 + '').substr(1);
+      return date.format("MM/dd hh:mm:ss"); // +  '.' + (date.getMilliseconds() + 1000 + '').substr(1);
     },
   },
 };

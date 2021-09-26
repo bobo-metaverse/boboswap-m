@@ -264,7 +264,7 @@ export default {
     };
   },
   created:function() {
-    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"));
+    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"))[this.$store.state.chainId];
     this.limitedPrice = this.pairInfo.currentPrice;
     this.currentPrice = this.pairInfo.currentPrice;
     this.inTokenSymbol = this.pairInfo.symbol;
@@ -311,6 +311,12 @@ export default {
 
     this.updateTokenAmount();
     this.updateOrderList();
+
+    const bSellReturn = localStorage.getItem("bSell");
+    if (bSellReturn != null && bSellReturn != 0) {
+      bSellReturn == 1 ? this.clickSellBtn() : this.clickBuyBtn();
+      localStorage.setItem("bSell", 0);
+    }
   },
   beforeUnmount() {
     clearInterval(this.pairIntervalId);

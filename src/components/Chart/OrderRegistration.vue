@@ -52,7 +52,7 @@ export default {
     };
   },
   created:function() {
-    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"));
+    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"))[this.$store.state.chainId];
     if (this.$store.state.drizzle.contracts[this.pairInfo.pairAddr] == null) {
       var pairContract = {
         contractName: this.pairInfo.pairAddr,

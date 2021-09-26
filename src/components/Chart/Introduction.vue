@@ -56,7 +56,7 @@ export default {
     };
   },
   created:function() {
-    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"));
+    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"))[this.$store.state.chainId];
   },
   methods: {},
 };

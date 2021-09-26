@@ -94,7 +94,7 @@ const mutations = {
 				}				
 			});
 		}
-		var intervalId = 0;
+		var intervalId1 = 0;
 		const getPriceAndVolumn = () => {
 			const boboFactory = state.drizzle.contracts.BoboFactory;
 			const boboPairHelper = state.drizzle.contracts.BoboPairHelper;
@@ -103,7 +103,7 @@ const mutations = {
 				console.log('null factory');
 				return;
 			}
-			clearInterval(intervalId);
+			clearInterval(intervalId1);
 			boboPairHelper.methods.getPairInfo(boboFactory.address, boboRouter.address, quoteAddrsOfFirst, baseTokenFirstAddr, quoteAddrsOfSecond, baseTokenSecondAddr).call().then(result => {
 				// uint256[] memory pricesOfUsdt, uint256[] memory volumnsOfUsdt, uint256[] memory pricesOfUsdc, uint256[] memory volumnsOfUsdc
 				for (var i = 0; i < quoteAddrsOfFirst.length; i++) {
@@ -129,10 +129,45 @@ const mutations = {
 			})
 		}
 
+		var intervalId2 = 0;
+		const getPairAddressList = () => {
+			const boboFactory = state.drizzle.contracts.BoboFactory;
+			const boboPairHelper = state.drizzle.contracts.BoboPairHelper;
+			if (boboFactory == null) {
+				console.log('null factory');
+				return;
+			}
+			clearInterval(intervalId2);
+			boboPairHelper.methods.getPairAddressList(boboFactory.address, quoteAddrsOfFirst, baseTokenFirstAddr, quoteAddrsOfSecond, baseTokenSecondAddr).call().then(result => {
+				for (var i = 0; i < quoteAddrsOfFirst.length; i++) {
+					const assetInfo = assets[quoteAddrsOfFirst[i]];
+					const pairKey = assetInfo.symbol + '-' + baseTokenFirstName;
+					if (state.hangqing[pairKey] == null) {
+						console.log(pairKey, " not exist in contract!");
+						continue;
+					}
+					state.hangqing[pairKey].pairAddr = result.pairAddressListOfUsdt[i];
+				}
+				for (var j = 0; j < quoteAddrsOfSecond.length; j++) {
+					const assetInfo = assets[quoteAddrsOfSecond[j]];
+					const pairKey = assetInfo.symbol + '-' + baseTokenSecondName;
+					if (state.hangqing[pairKey] == null) {
+						console.log(pairKey, " not exist in contract!");
+						continue;
+					}
+					state.hangqing[pairKey].pairAddr = result.pairAddressListOfUsdc[i];
+				}
+			})
+		}
+
 		getPairInfoFromCoingeck();
-		intervalId = setInterval(() => {
+		intervalId1 = setInterval(() => {
 			getPriceAndVolumn();
 		}, 1000);
+		intervalId2 = setInterval(() => {
+			getPairAddressList();
+		}, 1000);
+
 		getPriceAndVolumn();
 		setInterval(() => {
 			console.log("update");

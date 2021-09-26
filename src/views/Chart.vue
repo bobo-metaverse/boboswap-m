@@ -49,18 +49,15 @@
       </div>
     </div>
     <div class="footer">
-      <span class="buy">买入</span>
-      <span class="sell">卖出</span>
-      <span class="collection">
-        <i class="iconfont icon-star4"></i> <span>自选</span></span
-      >
+      <span class="buy" @click="makeOrder(false)">买入</span>
+      <span class="sell" @click="makeOrder(true)">卖出</span>    
     </div>
   </div>
 </template>
 <script>
 let view_img1 = require("../assets/images/view_img1.png");
 let view_img2 = require("../assets/images/view_img3.png");
-import ChartChild from "../components/Chart/Chart";
+import ChartChild from "../components/Chart/TradeChart";
 import OrderRegistration from "../components/Chart/OrderRegistration";
 import Introduction from "../components/Chart/Introduction";
 import Deal from "../components/Chart/Deal";
@@ -80,15 +77,22 @@ export default {
     },
   },
   created:function() {
-    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"));
+    this.pairInfo = JSON.parse(localStorage.getItem("CurPairInfo"))[this.$store.state.chainId];
     console.log(this.pairInfo)
   },
   components: { ChartChild, OrderRegistration, Introduction, Deal },
   methods: {
     back() {
       this.$store.dispatch("chageHeader", true);
-      //this.$router.push("/home");
-      this.$router.go(-1);
+      this.$router.push("/home");
+      localStorage.setItem("curIndex", 2);
+      //this.$router.go(-1);
+    },
+    makeOrder(bSell) {
+      this.$store.dispatch("chageHeader", true);
+      this.$router.push("/home");
+      localStorage.setItem("curIndex", 2);
+      localStorage.setItem("bSell", bSell ? 1 : -1);
     },
     toggle() {},
   },

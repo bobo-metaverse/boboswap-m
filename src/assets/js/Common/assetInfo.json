@@ -424,5 +424,91 @@
             ]
           }
       ]
-      }
+    },
+    "1313161554": {
+      "assets": [
+        {
+          "name": "TetherUS",
+          "symbol": "USDT",
+          "decimals": 6,
+          "ethAddress": "0x4988a896b1227218e4a686fde5eabdcabd91571f",
+          "address": "0x40aF8F1383474BCb11496c302Ea309DBA24C8460",
+          "coingeckoId": "tether"
+        },
+        {
+          "name": "USD Coin",
+          "symbol": "USDC",
+          "decimals": 6,
+          "ethAddress": "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
+          "address": "0x7B050D28603a33e036a642033B76D633d6574332",
+          "coingeckoId": "usd-coin"
+        },
+        {
+          "name": "ChainLink",
+          "symbol": "LINK",
+          "decimals": 18,
+          "ethAddress": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
+          "address": "0x94190d8ef039c670c6d6b9990142e0ce2a1e3178",
+          "coingeckoId": "chainlink"
+        },
+        {
+          "name": "Uniswap",
+          "symbol": "UNI",
+          "decimals": 18,
+          "ethAddress": "0x1bc741235ec0ee86ad488fa49b69bb6c823ee7b7",
+          "address": "0x38d1B95C9190d5d1772bbf34D46841fF3cF72701",
+          "coingeckoId": "uniswap"
+        },
+        {
+          "name": "Wrapped Bitcoin",
+          "symbol": "WBTC",
+          "decimals": 8,
+          "ethAddress": "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+          "address": "0xf4eb217ba2454613b15dbdea6e5f22276410e89e",
+          "coingeckoId": "wrapped-bitcoin"
+        },
+        {
+          "name": "Aave",
+          "symbol": "AAVE",
+          "decimals": 18,
+          "ethAddress": "0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9",
+          "address": "0x4e834cdcc911605227eedddb89fad336ab9dc00a",
+          "coingeckoId": "aave"
+        },
+        {
+          "name": "Dai",
+          "symbol": "DAI",
+          "decimals": 18,
+          "ethAddress": "0x6B175474E89094C44Da98b954EedeAC495271d0F",
+          "address": "0xe3520349f477a5f6eb06107066048508498a291b",
+          "coingeckoId": "dai"
+        }
+      ],
+      "pairs": [
+        {
+          "baseTokenName": "USDT",
+          "coingecko_currency": "usd",
+          "baseTokenAddr": "0x4988a896b1227218e4a686fde5eabdcabd91571f",
+          "quoteTokens": [
+              "0x94190d8ef039c670c6d6b9990142e0ce2a1e3178",
+              "0x1bc741235ec0ee86ad488fa49b69bb6c823ee7b7",
+              "0xf4eb217ba2454613b15dbdea6e5f22276410e89e", 
+              "0x4e834cdcc911605227eedddb89fad336ab9dc00a", 
+              "0xe3520349f477a5f6eb06107066048508498a291b"
+          ]
+        },
+        {
+          "baseTokenName": "USDC",
+          "coingecko_currency": "usd",
+          "baseTokenAddr": "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
+          "quoteTokens": [
+            "0x94190d8ef039c670c6d6b9990142e0ce2a1e3178",
+            "0x1bc741235ec0ee86ad488fa49b69bb6c823ee7b7",
+            "0xf4eb217ba2454613b15dbdea6e5f22276410e89e", 
+            "0x4e834cdcc911605227eedddb89fad336ab9dc00a", 
+            "0xe3520349f477a5f6eb06107066048508498a291b"
+          ]
+        }
+      ]
+    }
 }

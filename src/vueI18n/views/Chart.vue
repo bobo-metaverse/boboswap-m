@@ -50,8 +50,8 @@
       </div>
     </div>
     <div class="footer">
-      <span class="buy">买入</span>
-      <span class="sell">卖出</span>
+      <span class="buy" @click="">买入</span>
+      <span class="sell" @click="">卖出</span>
       <span class="collection">
         <i class="iconfont icon-star4"></i> <span>自选</span></span
       >
