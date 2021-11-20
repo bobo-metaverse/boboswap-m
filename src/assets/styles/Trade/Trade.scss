@@ -161,6 +161,22 @@
     font-size: 12px;
     color: #71819A;
   }
+  .market_tip{
+    width:100%;
+    padding: 0;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    .position{
+      width: 100%;
+      position: relative;
+      .tip{
+        width: 100%;
+      }
+    }
+  }
   .shuliang{
     width:calc( 100% - 40px);
     padding: 0 20px;

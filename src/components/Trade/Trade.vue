@@ -48,11 +48,15 @@
           style="width: 100%"
         ></el-input-number>
         </div>
-        <div v-else class="input_i">
-          <!-- <el-input
-            style="width: 216px; height: auto; background: #71819A;"
-            :disabled="true"
-          ></el-input> -->
+        <div v-else class="market_tip">
+          <span class="position">
+            <el-input
+              class="tip"
+              style="font-size: 12px"
+              
+              placeholder="通过聚合交易获取最佳收益"
+            ></el-input>
+          </span>
         </div>
       </div>
       <div class="view2_right">
@@ -382,10 +386,10 @@ export default {
         } else {
           if (this.delegateType == 'limitedDelegate') {  // 限价买单
             this.curStakeId = this.curPairContract.methods['addLimitedOrder'].cacheSend(
+                                                                                    this.boboRouter.address,
                                                                                     true,
                                                                                     '0x' + new BigNumber(this.limitedPrice).shiftedBy(6).toString(16),
                                                                                     '0x' + new BigNumber(this.inTokenAmount).shiftedBy(6).toString(16),
-                                                                                    '0x' + new BigNumber(this.slippagePercent * 100).toString(16),
                                                                                     { from: this.$store.state.account });
             this.syncTxStatus(
               () => {
@@ -434,10 +438,10 @@ export default {
         } else {  // 下单
           if (this.delegateType == 'limitedDelegate') {  // 限价单
             this.curStakeId = this.curPairContract.methods['addLimitedOrder'].cacheSend(
+                                                                                      this.boboRouter.address,
                                                                                       false,
                                                                                       '0x' + new BigNumber(this.limitedPrice).shiftedBy(6).toString(16),
                                                                                       '0x' + new BigNumber(this.inTokenAmount).shiftedBy(this.pairInfo.decimals).toString(16),
-                                                                                      '0x' + new BigNumber(this.slippagePercent * 100).toString(16),
                                                                                       { from: this.$store.state.account });
             this.syncTxStatus(
               () => {

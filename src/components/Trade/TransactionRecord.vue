@@ -53,7 +53,6 @@
 </template>
 <script>
 import OrderNFTABI from "../../assets/contracts/abi/OrderNFT.json";
-import OrderDetailNFTABI from "../../assets/contracts/abi/OrderDetailNFT.json";
 import BigNumber from "bignumber.js";
 export default {
   props: ['peerToken', 'baseToken', "pairInfo"],

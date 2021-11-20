@@ -4,13 +4,15 @@
       <span :class="navIndx == 1 ? 'active' : null" @click="navIndx = 1"
         >行情</span>
       <span :class="navIndx == 2 ? 'active' : null" @click="navIndx = 2"
-        >交易</span>
+        >现货</span>
       <span :class="navIndx == 3 ? 'active' : null" @click="navIndx = 3"
         >矿池</span>
       <!--span :class="navIndx == 4 ? 'active' : null" @click="navIndx = 4"
         >DAO</span-->
       <span :class="navIndx == 5 ? 'active' : null" @click="navIndx = 5"
         >Loot合成</span>
+      <!--span :class="navIndx == 6 ? 'active' : null" @click="navIndx = 6"
+        >杠杆</span-->
     </div>
     <Quotation v-if="navIndx == 1" :openTrade="openTrade"/>
     <Trade v-if="navIndx == 2"/>

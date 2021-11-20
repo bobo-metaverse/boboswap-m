@@ -1,9 +1,9 @@
 import Web3 from "web3";
 import OrderNFT from "./abi/OrderNFT.json";
-import OrderDetailNFT from "./abi/OrderDetailNFT.json";
 import BoboToken from "./abi/BOBOToken.json";
 import BoboFactory from "./abi/BoboFactory.json";
 import BoboRouter from "./abi/BoboRouter.json";
+import BoboRouterEx from "./abi/BoboRouterEx.json";
 import BoboFarmer from "./abi/BoboFarmer.json";
 import EXManager from "./abi/EXManager.json";
 import StratMaticSushi from "./abi/StratMaticSushi.json";
@@ -29,7 +29,7 @@ const options = {
     customProvider: new Web3(window.ethereum),
   },
   contracts: [
-    OrderNFT, OrderDetailNFT, BoboToken, BoboFactory, BoboRouter, EXManager, 
+    OrderNFT, BoboToken, BoboFactory, BoboRouter, BoboRouterEx, EXManager, 
     StratMaticSushi, BoboFarmer, BoboMasterChef, BoboFarmer4TradeMining, BoboPairHelper, 
     Loot, USDT
   ],
