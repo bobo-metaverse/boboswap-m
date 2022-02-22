@@ -24,7 +24,8 @@ export const myMixins = {
               window.ethereum.networkVersion != "128" &&
               window.ethereum.networkVersion != "137" &&
               window.ethereum.networkVersion != "42161" &&
-              window.ethereum.networkVersion != "1313161554"
+              window.ethereum.networkVersion != "1313161554" &&
+              window.ethereum.networkVersion != "31337"
             ) {
               _this.toast("error","请将MetaMask连接到Arbitrum、Polygon、BSC、Heco或Aurora网络，否则您无法正常使用本网站")
             } else {

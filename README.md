@@ -1,5 +1,7 @@
 # boboswap
 
+## Use Node V12
+
 ## Project setup
 ```
 npm install
