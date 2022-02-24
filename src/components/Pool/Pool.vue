@@ -226,17 +226,18 @@ export default {
       const interverId = setInterval(() => {
           const boboFactory = this.$store.state.drizzle.contracts.BoboFactory;
           const boboFarmer = this.$store.state.drizzle.contracts.BoboFarmer;
+          const boboPairHelper = this.$store.state.drizzle.contracts.BoboPairHelper;
           if (boboFactory == null || boboFarmer == null) return;
           // clearInterval(interverId);
           boboFactory.methods.USDT().call().then(usdtAddr => {
             this.usdtAddr = usdtAddr;
-            boboFactory.methods
+            boboPairHelper.methods
               .getTotalHangingTokenAmount(usdtAddr, this.$store.state.account)
               .call()
               .then((hangingUsdtAmount) => {
                 this.hangingUsdtAmount = this.getReadableNumber(hangingUsdtAmount, 6, 6);
               });
-            boboFactory.methods
+            boboPairHelper.methods
               .getClaimBaseTokenAmount(usdtAddr, this.$store.state.account)
                 .call()
                 .then((minedUsdtAmount) => {
@@ -249,13 +250,13 @@ export default {
 
           boboFactory.methods.USDC().call().then(usdcAddr => {
             this.usdcAddr = usdcAddr;
-            boboFactory.methods
+            boboPairHelper.methods
               .getTotalHangingTokenAmount(usdcAddr, this.$store.state.account)
               .call()
               .then((hangingUsdcAmount) => {
                 this.hangingUsdcAmount = this.getReadableNumber(hangingUsdcAmount, 6, 6);
               });
-            boboFactory.methods
+            boboPairHelper.methods
               .getClaimBaseTokenAmount(usdcAddr, this.$store.state.account)
                 .call()
                 .then((minedUsdcAmount) => {
@@ -335,7 +336,8 @@ export default {
     },
     claim(bUsdt) {
       const boboFactory = this.$store.state.drizzle.contracts.BoboFactory;
-      this.curStakeId = boboFactory.methods['claimBaseToken'].cacheSend(bUsdt ? this.usdtAddr : this.usdcAddr, { from: this.$store.state.account });
+      const boboPairHelper = this.$store.state.drizzle.contracts.BoboPairHelper;
+      this.curStakeId = boboPairHelper.methods['claimBaseToken'].cacheSend(bUsdt ? this.usdtAddr : this.usdcAddr, { from: this.$store.state.account });
       this.syncTxStatus(
         () => {
           this.toast("success", "成功提取收益");
@@ -347,7 +349,8 @@ export default {
     },
     claimBobo(bUsdt) {
       const boboFactory = this.$store.state.drizzle.contracts.BoboFactory;
-      this.curStakeId = boboFactory.methods['claimBoboToken'].cacheSend(bUsdt ? this.usdtAddr : this.usdcAddr, { from: this.$store.state.account });
+      const boboPairHelper = this.$store.state.drizzle.contracts.BoboPairHelper;
+      this.curStakeId = boboPairHelper.methods['claimBoboToken'].cacheSend(bUsdt ? this.usdtAddr : this.usdcAddr, { from: this.$store.state.account });
       this.syncTxStatus(
         () => {
           this.toast("success", "成功提取Bobo");

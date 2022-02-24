@@ -35,12 +35,10 @@ const mutations = {
 		let chainId = state.chainId.toString()
 
 		const pairsOnChain = AllPairsInfo[chainId];
-		let assets = {};
-		let coingeckoIds = '';
+		let assets = {};	
 		pairsOnChain.assets.map(asset => {
 			assets[asset.address] = asset;
-			coingeckoIds += asset.coingeckoId + ',';
-		});
+		});	
 
 		var baseTokenFirstName;
 		var baseTokenFirstAddr;
@@ -74,6 +72,12 @@ const mutations = {
 			}
 		}
 
+		let coingeckoIds = '';
+		pairsOnChain.assets.map(asset => {
+			if(asset.address != baseTokenFirstAddr && asset.address != baseTokenSecondAddr)
+				coingeckoIds += asset.coingeckoId + ',';
+		});
+
 		const getPairInfoFromCoingeck = () => {
 			let url = API.getRiseFall + "vs_currency=usd&ids=" + coingeckoIds;
 			axios.get(url).then((coinInfos) => {
@@ -83,12 +87,14 @@ const mutations = {
 						for (var j = 0; j < pairsOnChain.pairs.length; j++) {
 							const pairBaseInfo = pairsOnChain.pairs[j];
 							const pairKey = coinInfo.symbol.toUpperCase() + '-' + pairBaseInfo.baseTokenName;
+							console.log(pairKey, state.hangqing[pairKey]);
 							if (state.hangqing[pairKey] == null) {
 								continue;
 							}
 							state.hangqing[pairKey].price24HPercent = coinInfo.price_change_percentage_24h.toFixed(2);
 							state.hangqing[pairKey].high24H = coinInfo.high_24h.toFixed(2);
 							state.hangqing[pairKey].low24H = coinInfo.low_24h.toFixed(2);
+							state.hangqing[pairKey].currentPrice = coinInfo.current_price.toFixed(2);
 						}
 					}
 				}				
@@ -113,7 +119,8 @@ const mutations = {
 						console.log(pairKey, " not exist in contract!");
 						continue;
 					}
-					state.hangqing[pairKey].currentPrice = new BigNumber(result.pricesOfUsdt[i]).shiftedBy(-6);
+					if (new BigNumber(result.pricesOfUsdt[i]).shiftedBy(-6).toNumber() != 0)
+						state.hangqing[pairKey].currentPrice = new BigNumber(result.pricesOfUsdt[i]).shiftedBy(-6);
 					state.hangqing[pairKey].volumnOf24Hours = new BigNumber(result.volumnsOfUsdt[i]).shiftedBy(-6);
 				}
 				for (var j = 0; j < quoteAddrsOfSecond.length; j++) {
@@ -123,7 +130,8 @@ const mutations = {
 						console.log(pairKey, " not exist in contract!");
 						continue;
 					}
-					state.hangqing[pairKey].currentPrice = new BigNumber(result.pricesOfUsdc[i]).shiftedBy(-6);
+					if (new BigNumber(result.pricesOfUsdc[i]).shiftedBy(-6).toNumber() != 0)
+						state.hangqing[pairKey].currentPrice = new BigNumber(result.pricesOfUsdc[i]).shiftedBy(-6);
 					state.hangqing[pairKey].volumnOf24Hours = new BigNumber(result.volumnsOfUsdc[i]).shiftedBy(-6);
 				}
 			})

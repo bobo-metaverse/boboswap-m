@@ -34,7 +34,7 @@
 
       <div class="filter_left">
         <div class="left_box">
-          <span class="text">聚合价</span>
+          <span class="text">当前价</span>
           <span class="filter_imgs">
             <i class="iconfont icon-up"></i>
             <i class="iconfont icon-down"></i>
