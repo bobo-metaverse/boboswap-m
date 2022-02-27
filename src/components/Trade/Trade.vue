@@ -112,7 +112,8 @@
         <el-slider
           class="slide_content"
           v-model="sliderValue"
-          :step="20"
+          :step="step"
+          :max="max"
           show-stops
           @change="changeInput"
           style="width: 100%"
@@ -126,8 +127,8 @@
         <div class="edu">
           <span>预计获得</span>
           <span>
-            {{ buy_sell ? (delegateType == 'limitedDelegate' ? (inTokenAmount / limitedPrice).toFixed(6) : this.evaluatedAmountOut + ' ' + pairInfo.symbol)
-                        : (delegateType == 'limitedDelegate' ? (inTokenAmount * limitedPrice).toFixed(6) : this.evaluatedAmountOut + ' ' + pairInfo.baseTokenName) }}
+            {{ buy_sell ? (delegateType == 'limitedDelegate' ? (inTokenAmount / limitedPrice).toFixed(6) + ' ' + pairInfo.symbol : this.evaluatedAmountOut + ' ' + pairInfo.symbol)
+                        : (delegateType == 'limitedDelegate' ? (inTokenAmount * limitedPrice).toFixed(6) + ' ' + pairInfo.baseTokenName : this.evaluatedAmountOut + ' ' + pairInfo.baseTokenName) }}
           </span
           >
         </div>
@@ -264,7 +265,9 @@ export default {
       executingTx: false,
       refresh: true,
       boboRouter: this.$store.state.drizzle.contracts.BoboRouter,
-      evaluatedAmountOut: 0
+      evaluatedAmountOut: 0,
+      step: 20,
+      max: 100
     };
   },
   created:function() {
@@ -314,7 +317,7 @@ export default {
     this.quoteTokenContract = this.$store.state.drizzle.contracts[this.pairInfo.symbol];
 
     this.updateTokenAmount();
-    this.updateOrderList();
+    this.updateOrderList();    
 
     const bSellReturn = localStorage.getItem("bSell");
     if (bSellReturn != null && bSellReturn != 0) {
@@ -334,7 +337,7 @@ export default {
   methods: {
     changeInput(value) {
       //sliderChage
-      this.inTokenAmount = (this.buy_sell ? this.baseTokenAmount : this.quoteTokenAmount) * value / 100;
+      this.inTokenAmount = value;
     },
     changeSlider(value) {
       //inputChange
@@ -348,12 +351,14 @@ export default {
       if (!this.buy_sell) {
         this.buy_sell = !this.buy_sell;
         this.updateInTokenSymbol(this.delegateType);
+        this.updateStepMax();
       }
     },
     clickSellBtn() {
       if (this.buy_sell) {
         this.buy_sell = !this.buy_sell;
         this.updateInTokenSymbol(this.delegateType);
+        this.updateStepMax();
       }
     },
     closeSlidingDialog(v) {
@@ -511,6 +516,7 @@ export default {
         .call()
         .then(v => {
           this.baseTokenAmount = this.getReadableNumber(v, 6, 6);
+          this.updateStepMax();
       });
 
       this.$store.state.drizzle.contracts[this.pairInfo.symbol]
@@ -527,6 +533,15 @@ export default {
         this.inTokenSymbol = this.pairInfo.symbol;
       }
       this.inTokenAmount = 0;
+    },
+    updateStepMax() {
+      if (this.buy_sell) {
+        this.step = new BigNumber(this.baseTokenAmount).div(5).toNumber();
+        this.max = new BigNumber(this.baseTokenAmount).toNumber();
+      } else {
+        this.step = new BigNumber(this.quoteTokenAmount).div(5).toNumber();
+        this.max = new BigNumber(this.quoteTokenAmount).toNumber();
+      }
     },
     updateOrderList() {
       var pairContract = this.$store.state.drizzle.contracts[this.pairInfo.pairAddr];
@@ -639,7 +654,13 @@ export default {
       const inTokenAmount = '0x' + new BigNumber(this.inTokenAmount).shiftedBy(this.buy_sell ? 6 : this.pairInfo.decimals).toString(16);
       this.boboRouter.methods.getBestSwapPath(inToken, outToken, inTokenAmount).call().then(result => {
         this.evaluatedAmountOut = this.getReadableNumber(result.bestResultInfo.totalAmountOut, this.buy_sell ? this.pairInfo.decimals : 6, 6);
-        console.log(this.evaluatedAmountOut)
+        console.log(this.evaluatedAmountOut);
+        if (this.evaluatedAmountOut == 0) {
+          if (this.buy_sell) {
+            this.sellList
+          }
+          return;
+        }
       });
     }
   },

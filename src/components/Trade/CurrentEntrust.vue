@@ -8,7 +8,7 @@
       <div class="list_item">
         <div class="type">
           <div class="type_left">
-            <span v-if="order.bBuy" class="type_text_buy">买入[NFT-Id: {{order.id}}]</span>
+            <span v-if="order.bBuyQuoteToken" class="type_text_buy">买入[NFT-Id: {{order.id}}]</span>
             <span v-else class="type_text_sell">卖出[NFT-Id: {{order.id}}]</span>
           </div>
           <span v-if="executingTx" class="cancel">撤销</span>
@@ -17,19 +17,19 @@
         <div class="data_info">
           <div class="small_box">
             <span class="info_title">下单价({{pairInfo.baseTokenName}})</span>
-            <span class="info_num">{{order.price}}</span>
+            <span class="info_num">{{getReadableNumber(order.spotPrice, 6, 2)}}</span>
           </div>
           <div class="small_box">
-            <span class="info_title">下单数量({{order.bBuy ? pairInfo.baseTokenName : pairInfo.symbol}})</span>
-            <span class="info_num">{{order.amountIn}}</span>
+            <span class="info_title">下单数量({{order.bBuyQuoteToken ? pairInfo.baseTokenName : pairInfo.symbol}})</span>
+            <span class="info_num">{{getReadableNumber(order.inAmount, order.bBuyQuoteToken ? 6 : pairInfo.decimals, 2)}}</span>
           </div>
           <div class="small_box">
-            <span class="info_title">至少获得({{order.bBuy ? pairInfo.symbol : pairInfo.baseTokenName}})</span>
-            <span class="info_num">{{order.amountOut}}</span>
+            <span class="info_title">至少获得({{order.bBuyQuoteToken ? pairInfo.symbol : pairInfo.baseTokenName}})</span>
+            <span class="info_num">{{getReadableNumber(order.minOutAmount, order.bBuyQuoteToken ? pairInfo.decimals : 6, 4)}}</span>
           </div>
           <div class="small_box info_time">
             <span class="info_title">时间</span>
-            <span class="info_num">{{order.time}}</span>
+            <span class="info_num">{{getValidTime(order.delegateTime)}}</span>
           </div>
         </div>
       </div>
@@ -46,6 +46,7 @@ export default {
     return {
       pairContract: null,
       orderNFT: this.$store.state.drizzle.contracts.OrderNFT,
+      boboPairHelper: this.$store.state.drizzle.contracts.BoboPairHelper,
       orderList: [],
       curStakeId: null,
       executingTx: false
@@ -76,23 +77,10 @@ export default {
     },
     updateHangingOrders() {
       this.orderList = [];
-      this.pairContract = this.$store.state.drizzle.contracts[this.pairInfo.pairAddr];
-      this.pairContract.methods.getUserHangingOrderNumber(this.$store.state.account).call().then(number => {
-        var i = 0;
-        console.log('order number = ', number);
-        while(i < number) {
-          this.pairContract.methods.getUserHangingOrderId(this.$store.state.account, i).call().then(id => {
-            this.orderNFT.methods.id2NFTInfoMap(id).call().then(orderInfo => {
-              orderInfo.id = id;
-              orderInfo.bBuy = orderInfo.bBuyQuoteToken;
-              orderInfo.price = this.getReadableNumber(orderInfo.spotPrice, 6, 2);
-              orderInfo.amountIn = this.getReadableNumber(orderInfo.inAmount, orderInfo.bBuy ? 6 : this.pairInfo.decimals, 2);
-              orderInfo.amountOut = this.getReadableNumber(orderInfo.minOutAmount, orderInfo.bBuy ? this.pairInfo.decimals : 6, 4);
-              orderInfo.time = this.getValidTime(orderInfo.delegateTime);
-              this.orderList.push(orderInfo);
-            });
-          });
-          i++;
+      this.boboPairHelper.methods.getUserHangingOrderInfos(this.pairInfo.pairAddr, this.$store.state.account, 0, 100).call().then(orders => {
+        for(var i = orders.orderInfos.length - 1; i--;) {
+          this.orderList.push(orders.orderInfos[i]);
+          if (i == 0) break;
         }
       });
     },

@@ -8,7 +8,7 @@
       <div class="list_item">
         <div class="type">
           <div class="type_left">
-            <span v-if="order.bBuy" class="type_text_buy">买入[NFT-Id: {{order.id}}]</span>
+            <span v-if="order.bBuyQuoteToken" class="type_text_buy">买入[NFT-Id: {{order.id}}]</span>
             <span v-else class="type_text_sell">卖出[NFT-Id: {{order.id}}]</span>
           </div>
           <span v-if="order.status=='交易成功'" class="status status-success">{{order.status}}</span>
@@ -28,23 +28,23 @@
         <div class="data_info">
           <div class="small_box">
             <span class="info_title">下单价({{pairInfo.baseTokenName}})</span>
-            <span class="info_num">{{order.price}}</span>
+            <span class="info_num">{{getReadableNumber(orderInfo.spotPrice, 6, 2)}}</span>
           </div>
           <div class="small_box">
-            <span class="info_title">下单数量({{order.bBuy ? pairInfo.baseTokenName : pairInfo.symbol}})</span>
-            <span class="info_num">{{order.amountIn}}</span>
+            <span class="info_title">下单数量({{order.bBuyQuoteToken ? pairInfo.baseTokenName : pairInfo.symbol}})</span>
+            <span class="info_num">{{getReadableNumber(orderInfo.inAmount, orderInfo.bBuy ? 6 : this.pairInfo.decimals, 2)}}</span>
           </div>
           <div class="small_box">
-            <span class="info_title">实际获得({{order.bBuy ? pairInfo.symbol : pairInfo.baseTokenName}})</span>
-            <span class="info_num">{{order.amountOut}}</span>
+            <span class="info_title">实际获得({{order.bBuyQuoteToken ? pairInfo.symbol : pairInfo.baseTokenName}})</span>
+            <span class="info_num">{{getReadableNumber(orderInfo.outAmount, orderInfo.bBuy ? this.pairInfo.decimals : 6, 4)}}</span>
           </div>
           <div class="small_box info_time">
             <span class="info_title">下单时间</span>
-            <span class="info_num">{{order.startTime}}</span>
+            <span class="info_num">{{getValidTime(orderInfo.delegateTime)}}</span>
           </div>
           <div class="small_box info_time">
             <span class="info_title">终止时间</span>
-            <span class="info_num">{{order.endTime}}</span>
+            <span class="info_num">{{getValidTime(orderInfo.dealedTime)}}</span>
           </div>
         </div>
       </div>
@@ -61,6 +61,7 @@ export default {
     return {
       pairContract: null,
       orderNFT: this.$store.state.drizzle.contracts.OrderNFT,
+      boboPairHelper: this.$store.state.drizzle.contracts.BoboPairHelper,
       orderList: [],
       lastIndex: 0
     };
@@ -70,28 +71,17 @@ export default {
   },
   methods: {
     syncUnHangingOrders() {
-      this.pairContract = this.$store.state.drizzle.contracts[this.pairInfo.pairAddr];
-      this.pairContract.methods.getUserOrderNumber(this.$store.state.account).call().then(number => {
-        var i = this.lastIndex == 0 ? number : this.lastIndex;
-        while(i >= 0) {
-          this.pairContract.methods.userOrdersMap(this.$store.state.account, i).call().then(id => {
-            this.orderNFT.methods.id2NFTInfoMap(id).call().then(orderInfo => {
-              if (orderInfo.status == '0') return;
-
-              orderInfo.id = id;
-              orderInfo.bBuy = orderInfo.bBuyQuoteToken;
-              orderInfo.price = this.getReadableNumber(orderInfo.spotPrice, 6, 2);
-              orderInfo.amountIn = this.getReadableNumber(orderInfo.inAmount, orderInfo.bBuy ? 6 : this.pairInfo.decimals, 2);
-              orderInfo.amountOut = this.getReadableNumber(orderInfo.outAmount, orderInfo.bBuy ? this.pairInfo.decimals : 6, 4);
-              orderInfo.startTime = this.getValidTime(orderInfo.delegateTime);
-              orderInfo.endTime = this.getValidTime(orderInfo.dealedTime);
-              orderInfo.status = orderInfo.status == '1' ? '已撤销' : (orderInfo.status == '2' ? '交易成功' : '交易失败');
-              this.orderList.push(orderInfo);
-            });
-          });
-          i--;
+      this.boboPairHelper.methods.getAllDealedOrders(this.pairInfo.pairAddr, this.$store.state.account, 0, 100).call().then(result => {
+        for(var i = result.orderInfos.length - 1; i--;) {
+          const orderInfo = result.orderInfos[i];
+          orderInfo.status = this.getStatus(orderInfo.status);
+          this.orderList.push(orderInfo);
+          if (i == 0) break;
         }
       });
+    },
+    getStatus(statusCode) {
+      return statusCode == '1' ? '已撤销' : (statusCode == '2' ? '交易成功' : '交易失败');
     },
     getReadableNumber(value, assetDecimal, displayDecimal) {
       let renderValue = new BigNumber(value);

@@ -478,7 +478,7 @@
           "symbol": "USDT",
           "decimals": 6,
           "ethAddress": "0x4988a896b1227218e4a686fde5eabdcabd91571f",
-          "address": "0x5067457698Fd6Fa1C6964e416b3f42713513B3dD",
+          "address": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
           "coingeckoId": "tether"
         },
         {
@@ -486,7 +486,7 @@
           "symbol": "USDC",
           "decimals": 6,
           "ethAddress": "0xb12bfca5a55806aaf64e99521918a4bf0fc40802",
-          "address": "0xe8D2A1E88c91DCd5433208d4152Cc4F399a7e91d",
+          "address": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
           "coingeckoId": "usd-coin"
         },
         {
@@ -494,7 +494,7 @@
           "symbol": "NEAR",
           "decimals": 18,
           "ethAddress": "0x514910771AF9Ca656af840dff83E8264EcF986CA",
-          "address": "0x720472c8ce72c2A2D711333e064ABD3E6BbEAdd3",
+          "address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
           "coingeckoId": "near"
         }
       ],
@@ -502,17 +502,17 @@
         {
           "baseTokenName": "USDT",
           "coingecko_currency": "usd",
-          "baseTokenAddr": "0x5067457698Fd6Fa1C6964e416b3f42713513B3dD",
+          "baseTokenAddr": "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
           "quoteTokens": [
-              "0x720472c8ce72c2A2D711333e064ABD3E6BbEAdd3"
+              "0x5FbDB2315678afecb367f032d93F642f64180aa3"
           ]
         },
         {
           "baseTokenName": "USDC",
           "coingecko_currency": "usd",
-          "baseTokenAddr": "0xe8D2A1E88c91DCd5433208d4152Cc4F399a7e91d",
+          "baseTokenAddr": "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
           "quoteTokens": [
-            "0x720472c8ce72c2A2D711333e064ABD3E6BbEAdd3"
+            "0x5FbDB2315678afecb367f032d93F642f64180aa3"
           ]
         }
       ]
